@@ -25,4 +25,9 @@ flutter:
     - assets/levels/
     - assets/heroes/
     - assets/enemies/
-    - assets/images/
+    - assets/images/style_board/
+    - assets/images/tiles/
+    - assets/images/skills/
+    - assets/images/icons/
+    - assets/images/ui/
+    - assets/images/vfx/

@@ -95,3 +95,15 @@ Authority: product/engineering choices that override or clarify [PHASES](../PHAS
 **Reason:** Clearer activation UX; fireball feels intentional on swap vs lucky on tap; rocket+bomb should not be direction-dependent.
 
 **Status:** Accepted — implemented
+
+---
+
+## 2026-07-10 — AB1 production standards locked
+
+**Decision:** Adopt [AB1 — Production Standards](../06_Asset_Bible/AB1_Production_Standards.md) for the first art pass: Dusk style board, Leonardo AI + ForgeGUI workflow, stable `{category}_{id}.png` naming, export sizes, and human review checklist.
+
+**Reason:** Lock specs before generating hero/enemy/tile assets so AI output stays consistent and Flutter-ready.
+
+**Impact:** `docs/06_Asset_Bible/AB1_Production_Standards.md`, `assets/images/*` subfolders, style board in `assets/images/style_board/`.
+
+**Status:** Accepted
