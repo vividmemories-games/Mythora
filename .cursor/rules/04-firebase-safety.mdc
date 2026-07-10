@@ -1,0 +1,84 @@
+---
+description: Firebase architecture, Firestore security, Cloud Functions, and production safety.
+globs:
+  - "lib/firebase/**/*.dart"
+  - "functions/**/*.ts"
+  - "functions/**/*.js"
+  - "firestore.rules"
+  - "database.rules.json"
+  - "firestore.indexes.json"
+  - "firebase.json"
+alwaysApply: true
+---
+
+# Firebase Safety Rules
+
+Firebase is authoritative for user state, economy, events, leaderboards, and live content.
+
+## Never Trust the Client
+
+The client must not directly grant:
+- coins
+- gems
+- premium currency
+- equipment
+- heroes
+- leaderboard ranks
+- event rewards
+- purchase entitlements
+
+Use Cloud Functions or validated server-side paths for trusted writes.
+
+## Firestore Collections
+
+Suggested collections:
+
+```text
+users
+heroes
+skills
+equipment
+enemies
+bosses
+campaigns
+daily_challenges
+events
+leaderboards
+battle_runs
+inventory
+shop_offers
+economy_config
+remote_balance
+```
+
+## Security Rules
+
+Never allow:
+- unauthenticated writes to gameplay content
+- users editing other users' profiles
+- client writes to authoritative rewards
+- public writes to balance configs
+- public writes to leaderboard scores without validation
+- user-controlled price/reward values
+
+## Production Safety
+
+Do not run without explicit approval:
+- `firebase deploy`
+- production Firestore deletes
+- production collection migrations
+- auth user deletes
+- security rule changes
+- function deployments
+- billing-impacting architecture changes
+
+## Cost Awareness
+
+Avoid chatty real-time listeners.
+Prefer:
+- Firestore for durable data
+- Cloud Functions for trusted actions
+- Remote Config for lightweight tuning
+- Emulator tests for backend changes
+
+Do not introduce realtime multiplayer infrastructure unless explicitly requested.

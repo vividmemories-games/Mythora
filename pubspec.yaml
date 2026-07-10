@@ -1,0 +1,28 @@
+name: mythora
+description: "Mythora — turn-based puzzle RPG. Match tiles for resources, spend AP on hero skills."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.5.1
+  go_router: ^14.2.7
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/levels/
+    - assets/heroes/
+    - assets/enemies/
+    - assets/images/

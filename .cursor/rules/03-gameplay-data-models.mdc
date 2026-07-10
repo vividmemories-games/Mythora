@@ -1,0 +1,60 @@
+---
+description: Data model rules for heroes, skills, equipment, enemies, bosses, and balance configs.
+globs:
+  - "lib/**/*.dart"
+  - "assets/**/*.json"
+  - "functions/**/*.ts"
+  - "functions/**/*.js"
+alwaysApply: true
+---
+
+# Gameplay Data Model Rules
+
+Mythora must be data-driven.
+
+Any configurable gameplay definition should support:
+- `id`
+- `schemaVersion`
+- `contentVersion`
+- `isEnabled`
+- `createdAt`
+- `updatedAt`
+
+Recommended entity types:
+- HeroDefinition
+- SkillDefinition
+- EquipmentDefinition
+- EnemyDefinition
+- BossDefinition
+- CampaignNodeDefinition
+- DailyChallengeDefinition
+- EventDefinition
+- BalanceConfig
+
+Do not hardcode balance values inside widgets.
+
+Avoid magic numbers:
+- damage formulas
+- resource costs
+- AP costs
+- move counts
+- drop rates
+- reward values
+- XP curves
+
+Use config objects or repository-loaded definitions.
+
+IDs must be stable and machine-friendly:
+- good: `hero_knight_001`
+- good: `skill_fireball_001`
+- bad: `Fireball Skill!!!`
+- bad: random display-name IDs
+
+Display names and descriptions should be separate from IDs.
+
+When adding a new mechanic, define:
+1. domain model
+2. serialization model
+3. validation rules
+4. tests
+5. sample config

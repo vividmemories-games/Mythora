@@ -1,0 +1,42 @@
+{
+  "id": "twilight_road",
+  "title": "Twilight Road",
+  "subtitle": "Five skirmishes on the dusk path.",
+  "nodes": [
+    {
+      "id": "node_01",
+      "name": "Goblin Path",
+      "enemyId": "goblin",
+      "coinReward": 35,
+      "order": 0
+    },
+    {
+      "id": "node_02",
+      "name": "Wolf Den",
+      "enemyId": "wolf",
+      "coinReward": 50,
+      "order": 1
+    },
+    {
+      "id": "node_03",
+      "name": "Shaman Hollow",
+      "enemyId": "shaman",
+      "coinReward": 70,
+      "order": 2
+    },
+    {
+      "id": "node_04",
+      "name": "Brute Gate",
+      "enemyId": "brute",
+      "coinReward": 90,
+      "order": 3
+    },
+    {
+      "id": "node_05",
+      "name": "Warchief",
+      "enemyId": "warchief",
+      "coinReward": 120,
+      "order": 4
+    }
+  ]
+}

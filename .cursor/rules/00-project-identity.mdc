@@ -1,0 +1,33 @@
+---
+description: Mythora project identity and non-negotiable product principles.
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Mythora Project Identity
+
+Mythora is a Flutter + Firebase turn-based Puzzle RPG designed for a solo developer.
+
+Core product direction:
+- System-heavy, not art-heavy.
+- Data-driven, not handcrafted-content-heavy.
+- Battle-screen focused, not map/exploration focused.
+- Scalable through heroes, skills, equipment, enemies, bosses, events, and live ops.
+
+Non-negotiable design rules:
+1. The puzzle board generates resources, not direct damage.
+2. Moves limit puzzle actions.
+3. AP limits skill usage.
+4. Hero skills consume both resources and AP.
+5. Bosses change rules; they should not only increase HP/damage.
+6. Firebase-driven content must be versioned and safe.
+7. Avoid features that require large bespoke art pipelines.
+8. Prefer mechanics, configs, and systems over cinematic content.
+
+Do not steer this project toward:
+- Labyrinth-style handcrafted exploration.
+- Premium 3D/isometric world art.
+- Large animated story sequences.
+- Heavy map production.
+- Real-time multiplayer before the core PvE game is stable.

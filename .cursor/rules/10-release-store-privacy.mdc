@@ -1,0 +1,42 @@
+---
+description: Release, app store, privacy, authentication, and platform safety rules.
+globs:
+  - "ios/**/*"
+  - "android/**/*"
+  - "lib/**/*.dart"
+  - "firebase.json"
+  - "pubspec.yaml"
+alwaysApply: false
+---
+
+# Release, Store, and Privacy Rules
+
+Mythora targets iOS and Android.
+
+Authentication may include:
+- Guest
+- Google Sign-In
+- Apple Sign-In
+
+Do not change auth providers without approval.
+
+Privacy/store safety:
+- keep data collection aligned with actual app behavior
+- do not add tracking SDKs casually
+- keep consent, ads, analytics, and ATT/GDPR implications explicit
+- do not add Play Store references to App Store screenshots or iOS-only assets
+- do not add App Store references to Android-only store assets
+- keep children/content-rating implications in mind for monetization and ads
+
+Release safety:
+- do not bump versions blindly
+- do not change bundle IDs/package names without approval
+- do not change signing configs without approval
+- do not deploy production Firebase changes during app release work unless requested
+
+Before release-related changes, inspect:
+- `pubspec.yaml`
+- Android Gradle config
+- iOS project settings
+- Firebase configs
+- ad/IAP setup

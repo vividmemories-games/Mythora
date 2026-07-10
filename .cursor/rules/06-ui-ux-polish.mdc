@@ -1,0 +1,52 @@
+---
+description: UI/UX rules for creating a polished but solo-developer-realistic mobile game.
+globs:
+  - "lib/**/*.dart"
+  - "assets/**/*"
+alwaysApply: false
+---
+
+# UI/UX and Polish Rules
+
+Mythora should feel polished without requiring a large art team.
+
+Design direction:
+- premium mobile UI
+- readable battle board
+- reusable panels and cards
+- restrained animations
+- strong feedback on matches and skills
+- minimal bespoke environment art
+
+Avoid:
+- expensive animated scenes
+- large handcrafted maps
+- complex character animation systems
+- UI that depends on many custom illustrations
+- over-designed screens that slow down iteration
+
+Battle screen priorities:
+1. board readability
+2. clear moves remaining
+3. clear AP/resource meters
+4. obvious available skills
+5. visible enemy intent
+6. fast turn resolution
+7. satisfying but short animations
+
+Use reusable design components:
+- resource chip
+- hero card
+- skill button
+- enemy intent badge
+- reward card
+- item tooltip
+- status effect badge
+- rarity frame
+
+Mobile constraints:
+- design for one-handed play where possible
+- avoid tiny tap targets
+- support small phone screens
+- respect safe areas
+- avoid text overflow

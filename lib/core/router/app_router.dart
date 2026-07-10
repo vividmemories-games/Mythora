@@ -1,0 +1,44 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../features/battle/presentation/battle_result_screen.dart';
+import '../../features/battle/presentation/battle_screen.dart';
+import '../../features/campaign/presentation/campaign_screen.dart';
+import '../../features/home/presentation/home_screen.dart';
+
+final appRouterProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    initialLocation: '/',
+    routes: [
+      GoRoute(
+        path: '/',
+        name: 'home',
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/campaign',
+        name: 'campaign',
+        builder: (context, state) => const CampaignScreen(),
+      ),
+      GoRoute(
+        path: '/battle/:nodeId',
+        name: 'battle',
+        builder: (context, state) {
+          final nodeId = state.pathParameters['nodeId']!;
+          return BattleScreen(nodeId: nodeId);
+        },
+      ),
+      GoRoute(
+        path: '/result',
+        name: 'result',
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! BattleResultArgs) {
+            return const CampaignScreen();
+          }
+          return BattleResultScreen(args: args);
+        },
+      ),
+    ],
+  );
+});

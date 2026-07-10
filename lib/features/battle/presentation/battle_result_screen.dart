@@ -1,0 +1,151 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../core/theme/app_theme.dart';
+import '../../campaign/data/campaign_repository.dart';
+import '../../profile/providers/mock_profile_provider.dart';
+
+class BattleResultArgs {
+  const BattleResultArgs({
+    required this.won,
+    required this.nodeId,
+    required this.nodeName,
+    required this.enemyName,
+    required this.coinReward,
+  });
+
+  final bool won;
+  final String nodeId;
+  final String nodeName;
+  final String enemyName;
+  final int coinReward;
+}
+
+class BattleResultScreen extends ConsumerStatefulWidget {
+  const BattleResultScreen({super.key, required this.args});
+
+  final BattleResultArgs args;
+
+  @override
+  ConsumerState<BattleResultScreen> createState() => _BattleResultScreenState();
+}
+
+class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
+  var _applied = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _applyReward());
+  }
+
+  Future<void> _applyReward() async {
+    if (_applied || !widget.args.won) return;
+    _applied = true;
+    await ref.read(profileProvider.notifier).applyVictory(
+          nodeId: widget.args.nodeId,
+          coinReward: widget.args.coinReward,
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final args = widget.args;
+    final textTheme = Theme.of(context).textTheme;
+    final chapter = ref.watch(campaignChapterProvider).valueOrNull;
+    final profile = ref.watch(profileProvider);
+
+    String? nextNodeId;
+    if (args.won && chapter != null) {
+      final current = chapter.nodeById(args.nodeId);
+      final next = chapter.nodes.where((n) => n.order == current.order + 1);
+      if (next.isNotEmpty) nextNodeId = next.first.id;
+    }
+
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              Text(
+                args.won ? 'Victory' : 'Defeat',
+                textAlign: TextAlign.center,
+                style: textTheme.displayLarge?.copyWith(
+                  fontSize: 40,
+                  color: args.won ? MythoraColors.amber : MythoraColors.ember,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                args.won
+                    ? 'You defeated ${args.enemyName} at ${args.nodeName}.'
+                    : '${args.enemyName} bested you. Try a different match plan.',
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium,
+              ),
+              if (args.won) ...[
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: MythoraColors.deepTeal,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: MythoraColors.mist),
+                  ),
+                  child: Column(
+                    children: [
+                      Text('Rewards', style: textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      Text(
+                        '+${args.coinReward} coins',
+                        style: textTheme.headlineMedium?.copyWith(
+                          color: MythoraColors.softGold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Purse: ${profile.coins} coins',
+                        style: textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const Spacer(),
+              if (args.won && nextNodeId != null)
+                FilledButton(
+                  onPressed: () => context.go('/battle/$nextNodeId'),
+                  child: const Text('Next battle'),
+                ),
+              if (args.won && nextNodeId != null) const SizedBox(height: 10),
+              if (!args.won)
+                FilledButton(
+                  onPressed: () => context.go('/battle/${args.nodeId}'),
+                  child: const Text('Retry'),
+                ),
+              if (!args.won) const SizedBox(height: 10),
+              OutlinedButton(
+                onPressed: () => context.go('/campaign'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: MythoraColors.parchment,
+                  side: const BorderSide(color: MythoraColors.mist),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('Campaign map'),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () => context.go('/'),
+                child: const Text('Home'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

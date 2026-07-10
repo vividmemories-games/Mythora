@@ -1,0 +1,59 @@
+---
+description: Testing and quality gates for gameplay, Flutter, Firebase, and release work.
+globs:
+  - "lib/**/*.dart"
+  - "test/**/*.dart"
+  - "functions/**/*.ts"
+  - "functions/**/*.js"
+alwaysApply: true
+---
+
+# Testing and Quality Rules
+
+No core gameplay change is complete without tests.
+
+## Required Gameplay Tests
+
+When touching battle logic, add or update tests for:
+- valid match resolution
+- invalid swap behavior
+- move consumption
+- resource generation
+- AP generation
+- max AP cap
+- skill cost validation
+- skill execution
+- insufficient resource handling
+- enemy turn resolution
+- death/victory/defeat states
+- status effects if involved
+
+## Required Firebase Tests
+
+When touching backend/security logic:
+- use Firebase emulators where practical
+- test allowed and denied Firestore paths
+- test Cloud Function validation
+- test reward idempotency
+- test purchase/reward duplication prevention
+
+## Commands
+
+Run when practical:
+
+```bash
+dart format .
+flutter analyze
+flutter test
+```
+
+For backend work, inspect available scripts first. Do not assume npm scripts exist.
+
+## Definition of Done
+
+A change is not done unless:
+- code is formatted
+- analysis is clean or issues are documented
+- relevant tests pass
+- risky assumptions are called out
+- no production deploy was performed without approval

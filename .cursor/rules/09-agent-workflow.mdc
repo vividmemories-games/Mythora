@@ -1,0 +1,45 @@
+---
+description: Workflow rules for Cursor, Codex, and other AI coding agents.
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# AI Agent Workflow Rules
+
+When implementing a task:
+
+1. Inspect the existing repo before changing files.
+2. Identify the relevant feature/module.
+3. Propose a small implementation plan if the change is non-trivial.
+4. Make focused, reviewable edits.
+5. Add or update tests.
+6. Run format/analyze/tests when practical.
+7. Summarize:
+   - files changed
+   - behavior changed
+   - tests run
+   - risks
+   - next recommended step
+
+Do not:
+- rewrite large parts of the app unnecessarily
+- introduce large dependencies without approval
+- deploy Firebase changes without approval
+- change core combat rules without approval
+- hide failed tests
+- invent files/APIs without checking the repo
+- store secrets in code
+- optimize prematurely
+
+If uncertain:
+- ask one concise question, or
+- make the safest minimal assumption and document it clearly
+
+Prefer:
+- pure Dart game logic
+- explicit models
+- small tests
+- clear naming
+- data-driven content
+- Firebase-safe writes

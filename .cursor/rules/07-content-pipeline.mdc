@@ -1,0 +1,36 @@
+---
+description: Content pipeline and future admin dashboard readiness.
+globs:
+  - "lib/**/*.dart"
+  - "functions/**/*"
+  - "assets/**/*.json"
+alwaysApply: false
+---
+
+# Content Pipeline Rules
+
+Design content systems so they can later be managed through an internal admin dashboard.
+
+Future dashboard modules:
+- hero editor
+- skill editor
+- enemy editor
+- boss editor
+- equipment editor
+- campaign editor
+- daily challenge scheduler
+- shop/event manager
+- balance tuning dashboard
+- player support tools
+
+When creating content models:
+- use stable IDs
+- use schema versions
+- separate display data from logic data
+- keep validation centralized
+- make preview/test data easy to generate
+- keep configs human-readable
+
+Do not require app releases for simple balance/content changes when Firebase/Remote Config can safely support it.
+
+Never expose admin-only write paths to normal clients.

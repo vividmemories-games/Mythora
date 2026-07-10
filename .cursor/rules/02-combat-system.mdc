@@ -1,0 +1,92 @@
+---
+description: Core combat system rules for Moves, AP, resources, matching, and enemy turns.
+globs:
+  - "lib/features/battle/**/*.dart"
+  - "test/features/battle/**/*.dart"
+alwaysApply: true
+---
+
+# Combat System Rules
+
+The combat model is the heart of Mythora. Do not change these rules without explicit approval.
+
+## Battle Loop
+
+```text
+Battle Starts
+  -> Player Turn Begins
+  -> Moves Refresh
+  -> Player Swaps Tiles
+  -> Matches Generate Resources
+  -> Matches Generate AP
+  -> Player Uses Skills
+  -> Moves Reach Zero or Player Ends Turn
+  -> Enemy Turn
+  -> Status Effects Resolve
+  -> Next Player Turn
+```
+
+## Tile Colors
+
+| Tile | Resource |
+|------|----------|
+| Red | Attack Energy |
+| Blue | Mana |
+| Green | Healing Energy |
+| Yellow | Shield Energy |
+| Purple | Ultimate Energy |
+
+## Matching
+
+- Matching does not directly damage enemies.
+- Matching generates resources.
+- Matching generates AP according to balance rules.
+- Every swap consumes 1 Move.
+- Invalid swaps should not consume Moves unless explicitly configured.
+
+## Moves
+
+- Moves are the puzzle action budget.
+- Moves refresh at the start of each player turn.
+- Moves do not carry over by default.
+- Hero passives, equipment, buffs, debuffs, and bosses may modify Moves.
+
+## AP
+
+- AP is combat stamina.
+- AP persists until spent.
+- AP is not automatically restored to full each turn.
+- AP has a max capacity per hero/team.
+- AP is earned through puzzle performance.
+
+## Skills
+
+Every skill must define:
+- resource costs
+- AP cost
+- target rules
+- effect list
+- validation
+- optional cooldown
+- animation cue
+
+A skill cannot execute if:
+- required resources are missing
+- required AP is missing
+- target is invalid
+- caster is dead/stunned/silenced when relevant
+
+## Enemy Turn
+
+Enemy actions should be deterministic enough to test.
+
+Enemy actions may:
+- attack
+- buff
+- debuff
+- summon
+- alter board tiles
+- add hazards
+- trigger boss mechanics
+
+Do not implement enemy behavior directly inside UI widgets.

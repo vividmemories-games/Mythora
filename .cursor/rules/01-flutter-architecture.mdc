@@ -1,0 +1,53 @@
+---
+description: Flutter architecture, folder structure, and state separation rules.
+globs:
+  - "lib/**/*.dart"
+alwaysApply: true
+---
+
+# Flutter Architecture Rules
+
+Keep the project modular, testable, and solo-developer maintainable.
+
+Recommended structure:
+
+```text
+lib/
+  app/
+  core/
+  features/
+    battle/
+      domain/
+      data/
+      presentation/
+    heroes/
+    inventory/
+    campaign/
+    daily_challenges/
+    shop/
+    profile/
+  firebase/
+  shared/
+```
+
+Rules:
+- Keep domain logic pure Dart where possible.
+- Do not put gameplay rules inside widgets.
+- Do not call Firebase directly from domain classes.
+- Keep screens thin.
+- Keep battle logic testable without Flutter rendering.
+- Prefer immutable value objects for gameplay state.
+- Prefer explicit state transitions over hidden side effects.
+- Do not introduce a new state management framework without approval.
+- Do not create giant files. Split by responsibility.
+- Avoid speculative abstraction. Build only what current features need.
+
+Expected battle feature split:
+- `domain/`: board, moves, AP, resources, skills, enemies, status effects.
+- `data/`: repositories, DTOs, Firebase mapping.
+- `presentation/`: widgets, animations, overlays, input handling.
+
+Performance:
+- Battle board interactions must remain responsive.
+- Avoid rebuilding the entire battle screen for tiny tile changes.
+- Keep animation effects separate from authoritative battle state.

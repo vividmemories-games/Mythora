@@ -1,0 +1,42 @@
+---
+description: Monetization, economy, rewards, ads, and IAP safety rules.
+globs:
+  - "lib/**/*.dart"
+  - "functions/**/*"
+alwaysApply: false
+---
+
+# Monetization and Economy Rules
+
+Monetization must not break trust or balance.
+
+Allowed directions:
+- rewarded ads
+- remove ads
+- cosmetics
+- starter bundles
+- season pass
+- limited convenience boosts
+- bonus chests
+- optional revives with strict caps
+
+Avoid:
+- pay-to-win PvP
+- unlimited paid revives
+- dark patterns
+- fake scarcity
+- client-side purchase entitlement grants
+- client-side premium currency grants
+
+Economy rules:
+- rewards must be server-validated where meaningful
+- purchases must be idempotent
+- duplicate reward claims must be prevented
+- shop offers must use server/Firebase-defined price and reward data
+- never trust client-submitted reward amounts
+
+Ad rules:
+- do not show interstitials during active battle turns
+- prefer rewarded ads at natural decision points
+- respect consent/privacy requirements
+- keep ad cadence configurable remotely
