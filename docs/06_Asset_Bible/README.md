@@ -14,6 +14,7 @@ Philosophy adapted from Labyrinth Legends AB0/AB5 — **without** maze tilesets 
 |-----|--------|---------|
 | **This README** | Active | Philosophy and index |
 | [AB1 — Production Standards](AB1_Production_Standards.md) | **Active** | Sizes, naming, export, AI workflow, prompts |
+| [AB1 — Leonardo Prompt Pack](AB1_Leonardo_Prompt_Pack.md) | **Active** | Copy-paste Leonardo prompts + beginner workflow |
 | AB2 — Animation & VFX | Planned | Multi-frame sheets when needed |
 | AB3 — Cosmetics & rarity | Planned | Shop frames, skins |
 | AB4 — Store & marketing | Planned | Screenshots, icons |
@@ -44,5 +45,5 @@ Full AB workshop chain beyond AB1, store marketing packs, per-world environment 
 ## Start here
 
 1. Read [AB1 — Production Standards](AB1_Production_Standards.md)
-2. Generate the [golden reference set](AB1_Production_Standards.md#4-golden-reference-set-style-board) into `assets/images/style_board/`
+2. Open [AB1 — Leonardo Prompt Pack](AB1_Leonardo_Prompt_Pack.md) and run §5 style-board prompts
 3. Follow the [Phase 1 production order](AB1_Production_Standards.md#13-phase-1-production-order)

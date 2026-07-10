@@ -33,7 +33,7 @@ Lower docs may **extend** higher ones; they must not redefine them. Record excep
 | Heroes / enemies | [Heroes](01_Game_Design/Heroes.md), [Enemies](01_Game_Design/Enemies.md) |
 | Colors / motion | [Theme](02_Design_System/Theme.md), [Animations](02_Design_System/Animations.md) |
 | Write code | [Coding Standards](04_Technical/Coding_Standards.md), [Architecture](04_Technical/Architecture.md) |
-| Produce art | [Asset Bible](06_Asset_Bible/README.md), [AB1 Production Standards](06_Asset_Bible/AB1_Production_Standards.md) |
+| Produce art | [Asset Bible](06_Asset_Bible/README.md), [AB1 Standards](06_Asset_Bible/AB1_Production_Standards.md), [Leonardo Prompt Pack](06_Asset_Bible/AB1_Leonardo_Prompt_Pack.md) |
 
 ## Structure
 
@@ -48,7 +48,8 @@ docs/
 ├── 04_Technical/             # architecture + coding standards
 └── 06_Asset_Bible/           # AB1 production standards + art philosophy
     ├── README.md
-    └── AB1_Production_Standards.md
+    ├── AB1_Production_Standards.md
+    └── AB1_Leonardo_Prompt_Pack.md
 ```
 
 ## Document standards
