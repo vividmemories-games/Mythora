@@ -1,99 +1,139 @@
 # AB1 — Leonardo Prompt Pack
 
-| Field | Value |
-|-------|-------|
-| **Status** | Active |
-| **Last Updated** | 2026-07-10 |
-| **Use with** | [AB1 Production Standards](AB1_Production_Standards.md) |
-| **Audience** | First-time Leonardo users generating Mythora Phase 1 assets |
 
-Copy prompts **exactly** from this doc. Do not use Leonardo’s “Prompt Enhance” until you have one approved style-board image — it tends to drift away from Dusk palette.
+| Field            | Value                                                                   |
+| ---------------- | ----------------------------------------------------------------------- |
+| **Status**       | Active                                                                  |
+| **Last Updated** | 2026-07-11                                                              |
+| **Use with**     | [AB1 Production Standards](AB1_Production_Standards.md)                 |
+| **Art lock**     | Chibi battle stage ([Decisions](../00_Project/Decisions.md) 2026-07-11) |
+
+
+Copy prompts **exactly**. Prompt Enhance **OFF** until a style-board image is approved.
+
+**Phoenix note:** Text-only runs drift to cinematic realism. Always attach the **chibi style seed** (§1.1) as Style Reference.
 
 ---
 
 ## 1. First session (10 minutes)
 
-1. Sign up at [leonardo.ai](https://leonardo.ai) → choose **Premium** if batch-generating (see prior tier notes).
+1. Sign up at [leonardo.ai](https://leonardo.ai).
 2. Left sidebar → **AI Image Generation**.
-3. Set **Private Mode** ON (paid plans).
-4. Model: **Leonardo Phoenix** (best prompt adherence for game art).
-5. Turn **Alchemy** ON for finals; OFF while exploring (saves tokens).
-6. Image dimensions — use the table in §3 for each asset type.
-7. Generate **4 images** per run while exploring; **1 image** for finals.
-8. After each good result → **Download** → rename per [AB1 §6](AB1_Production_Standards.md#6-naming-conventions).
+3. **Private Mode** ON (paid plans).
+4. Model: **Leonardo Phoenix**.
+5. Style preset: **Illustration** (avoid **Dynamic**).
+6. Alchemy ON for finals; OFF while exploring.
+7. Attach style seed via Image Guidance (§1.1).
+8. Sizes — table in §3.
+9. Generate **4** while exploring; **1** for finals.
+10. Download → rename per [AB1 §6](AB1_Production_Standards.md#6-naming-conventions).
+
+
+
+### 1.1 Bootstrap style seed (required)
+
+Repo file:
+
+`assets/images/style_board/style_seed_battle_mage.png`
+
+**In Leonardo:**
+
+1. **Image Guidance** → upload that PNG.
+2. Type: **Style Reference** (not Character Reference on first board pass).
+3. Strength: **High** for first mage/goblin board runs → **Mid** once consistent.
+4. Paste §5.1 prompt + §2 negative → generate 4 → pick winner → `style_board_hero_mage.png`.
+5. After mage board is approved, use **it** as Style Ref for goblin/tiles/heroes (seed is bootstrap only).
+
+Do **not** use `style_seed_hero_mage_bust_deprecated.png`.
+
+Reject: skin pores, adult proportions, cinematic busts, busy environments.
 
 ---
 
+
+
 ## 2. Universal negative prompt
 
-Paste this into the **Negative Prompt** field for **every** Mythora generation:
+Paste for **every** Mythora generation:
 
 ```text
 text, words, letters, numbers, watermark, logo, signature, username, frame, border, UI, caption,
+health bar, HP bar, level badge, star rating,
 blurry, low quality, jpeg artifacts, noisy, pixelated, oversaturated, neon colors, cyan glow, magenta glow,
 photorealistic, photograph, 3d render, octane, unreal engine, plastic skin,
-anime, chibi, cartoon network, disney, pixar, manga,
+realistic face, detailed skin texture, subsurface scattering, hyper detailed, cinematic lighting,
+adult proportions, realistic anatomy, fashion model, oil painting portrait, bust only,
+disney, pixar, cartoon network, manga panel,
 multiple characters, crowd, duplicate face, extra limbs, deformed hands, bad anatomy,
-full body, legs, feet, wide shot, tiny character,
-busy background, detailed environment, castle, cathedral, stone fortress, dungeon corridor,
+busy background, detailed environment, forest ruins, castle, cathedral, stone fortress, dungeon corridor,
 bright white background, harsh spotlight, lens flare,
-modern clothing, sci-fi, cyberpunk, guns, robots
+modern clothing, sci-fi, cyberpunk, guns, robots, gore
 ```
 
 ---
 
+
+
 ## 3. Universal settings by asset type
 
-| Asset type | Size | Alchemy | Guidance | Notes |
-|------------|------|---------|----------|-------|
-| Style board portraits | 1024 × 1024 | ON | None (first pass) | Pick best of 4 |
-| Production portraits | 1024 × 1024 | ON | Style Ref @ Mid after board locked | Use approved mage as ref |
-| Puzzle tiles | 768 × 768 | ON | None | Then Remove Background |
-| Tile shape overlays | 768 × 768 | OFF | None | White glyph, transparent |
-| Skill icons | 768 × 768 | ON | Style Ref @ Low–Mid | Keep simple |
-| VFX | 768 × 768 | ON | None | Transparent preferred |
+
+| Asset type                | Size        | Alchemy | Guidance                                   | Notes                   |
+| ------------------------- | ----------- | ------- | ------------------------------------------ | ----------------------- |
+| Style board characters    | 1024 × 1024 | ON      | Style Ref @ High from seed / approved mage | Full-body chibi         |
+| Production battle sprites | 1024 × 1024 | ON      | Style Ref @ Mid                            | Approved mage or goblin |
+| Puzzle tiles              | 768 × 768   | ON      | Style Ref @ Low–Mid from tile board        | Then Remove Background  |
+| Tile shape overlays       | 768 × 768   | OFF     | None                                       | White glyph             |
+| Skill icons               | 768 × 768   | ON      | Style Ref @ Low–Mid                        | Keep simple             |
+| VFX                       | 768 × 768   | ON      | None                                       | Transparent preferred   |
+
+
+
 
 ### Image Guidance (after style board approved)
 
-1. Click **Image Guidance** → upload `style_board_hero_mage.png`
-2. Type: **Style Reference**
-3. Strength: **Mid** (first try) → **High** if palette drifts
-4. For a specific character match: **Character Reference** @ Mid using that portrait
-
-Do **not** stack Style + Character above **High** on both — causes muddy output.
+1. Upload `style_board_hero_mage.png` (or goblin for enemies).
+2. **Style Reference** @ **Mid** (High if drift).
+3. Character Reference only when matching one hero’s face/outfit — Mid max; don’t stack both at High.
 
 ---
+
+
 
 ## 4. Production order
 
 ```text
-Day 1 — Style board (§5) → approve 5 PNGs
-Day 2 — Train Dusk Element OR use Style Reference only
-Day 3 — Tiles + shapes (§6)
-Day 4 — Heroes (§7)
-Day 5 — Enemies (§8)
-Day 6 — Skills (§9)
-Day 7 — Review checklist AB1 §11 → export to assets/
+Day 1 — Style seed → style board (§5) → approve 5 PNGs
+Day 2 — Tiles + shapes (§6)
+Day 3 — Heroes full-body (§7)
+Day 4 — Enemies full-body (§8)
+Day 5 — Skills (§9)
+Day 6 — Wire battle stage in Flutter
+Day 7 — Optional Element train + VFX
 ```
 
 ---
 
+
+
 ## 5. Style board prompts (generate first)
 
-Run each prompt **4 times**. Pick one winner. Save to `assets/images/style_board/`.
+Each run: Style Reference attached. Pick one winner → `assets/images/style_board/`.
 
 ### 5.1 `style_board_hero_mage.png`
+
+**Image Guidance:** `style_seed_battle_mage.png` → Style Reference @ **High**
 
 **Prompt:**
 
 ```text
-Single character portrait bust, young arcane mage, hooded deep teal cloak, pale parchment skin,
-focused battle-ready expression, faint purple arcane glow on fingertips,
-head and shoulders only, facing slightly right, centered composition,
-solid flat background color deep teal #123A44, warm amber gold rim light from upper left,
-painterly 2D mobile game illustration, clean readable silhouette,
-premium fantasy RPG hero portrait, soft brushwork, not photorealistic,
-dusk adventure mood, ink and teal shadows, no environment details
+Full-body chibi mobile game character, young arcane mage, large head short body,
+hooded deep teal cloak with amber trim, pale parchment skin, soft hair under hood,
+wooden staff with faint purple crystal, idle battle-ready standing pose,
+facing slightly right, centered, feet near bottom,
+solid flat background color deep teal #123A44,
+thick clean dark outlines, soft cel shading, glossy toy-like finish,
+premium casual fantasy match-3 RPG battle sprite, readable silhouette,
+dusk adventure mood, no environment, no UI, no health bar
 ```
 
 **Negative:** §2 universal
@@ -102,18 +142,21 @@ dusk adventure mood, ink and teal shadows, no environment details
 
 ---
 
+
+
 ### 5.2 `style_board_enemy_goblin.png`
+
+**Image Guidance:** approved mage board (or seed) → Style Reference @ **Mid–High**
 
 **Prompt:**
 
 ```text
-Single enemy character portrait bust, goblin scout, green-grey skin, large pointed ears,
-crude rusty dagger visible at shoulder, wary mischievous grin, menacing but readable,
-head and shoulders only, facing slightly left, centered composition,
-solid flat background color deep teal #123A44, subtle ember orange accent light,
-painterly 2D mobile game illustration, clean readable silhouette,
-premium fantasy RPG enemy portrait, soft brushwork, not photorealistic,
-dusk adventure mood, no gore, no environment details
+Full-body chibi mobile game enemy, goblin scout, large head short body,
+green-grey skin, large pointed ears, brown leather scraps, dual small daggers,
+wary mischievous combat pose, facing slightly left, centered, feet near bottom,
+solid flat background color deep teal #123A44, subtle ember orange accents,
+thick clean dark outlines, soft cel shading, glossy toy-like finish,
+premium casual fantasy match-3 RPG battle sprite, no gore, no environment, no UI
 ```
 
 **Negative:** §2 universal
@@ -122,26 +165,31 @@ dusk adventure mood, no gore, no environment details
 
 ---
 
+
+
 ### 5.3 `style_board_tile_red.png`
+
+**Image Guidance:** mage or goblin board @ **Low** (keep tile colorful)
 
 **Prompt:**
 
 ```text
-Single square puzzle game gem icon, one object only, centered,
-red attack energy crystal, rich red color #C94B4B, soft inner glow,
-subtle faceted gem cut, slight highlight on top facet,
-simple mobile match-3 tile, minimal detail, bold readable shape,
-painterly 2D game asset, transparent background, no shadow floor, no text,
-dusk fantasy style, premium mobile puzzle game
+Single glossy match-3 puzzle tile icon, one object only, centered,
+red attack energy gem with subtle sword chevron hint, rich red #C94B4B,
+thick clean outline, soft cel shading, bright toy highlight on top,
+bold readable shape for mobile puzzle board, transparent background,
+no shadow floor, no text, dusk fantasy casual match-3 RPG
 ```
 
-**Negative:** §2 universal + `multiple gems, grid, board, hand, frame`
+**Negative:** §2 + `multiple gems, grid, board, hand, character, frame`
 
-**Post:** Leonardo **Remove Background** → verify transparency
+**Post:** Remove Background → verify transparency
 
 **Save as:** `assets/images/style_board/style_board_tile_red.png`
 
 ---
+
+
 
 ### 5.4 `style_board_skill_fireball.png`
 
@@ -149,98 +197,104 @@ dusk fantasy style, premium mobile puzzle game
 
 ```text
 Single square RPG skill icon, one centered symbol only,
-fireball spell glyph, orange and amber flames forming a compact sphere,
-soft gold accent highlights #E6C87A, simple bold shape readable at 64 pixels,
-painterly 2D mobile game icon, transparent background, no circle border, no text,
-premium fantasy RPG ability icon, dusk adventure palette, not photorealistic
+fireball spell glyph, orange and amber flames in a compact sphere,
+thick clean outline, soft cel shading, soft gold accents #E6C87A,
+bold shape readable at 64 pixels, transparent background, no circle border, no text,
+casual fantasy mobile game ability icon, dusk adventure palette
 ```
 
-**Negative:** §2 universal + `square frame, button, UI panel, runes text`
+**Negative:** §2 + `square frame, button, UI panel, character, runes text`
 
 **Save as:** `assets/images/style_board/style_board_skill_fireball.png`
 
 ---
 
-### 5.5 `style_board_ui_panel.png` (optional — or use Flutter only)
 
-Use **ForgeGUI** for this one if Leonardo struggles with flat UI. If staying in Leonardo:
 
-**Prompt:**
+### 5.5 `style_board_ui_panel.png` (optional)
+
+Prefer Flutter-only chrome. If generating:
 
 ```text
 Game UI panel texture swatch, square canvas, dusk fantasy mobile RPG,
 deep teal panel fill #123A44, subtle mist border #1E4D57,
-small amber gold corner ornament top-left and bottom-right only,
-flat empty center area for stretching, no text, no buttons, no icons,
-2D hand-painted UI texture, top-down flat view, symmetrical margins
+small amber gold corner ornament, flat empty center for stretching,
+no text, no buttons, no characters, 2D flat UI texture
 ```
 
-**Negative:** §2 universal + `mockup, phone, screenshot, multiple panels`
-
-**Save as:** `assets/images/style_board/style_board_ui_panel.png`
+**Negative:** §2 + `mockup, phone, screenshot, multiple panels`
 
 ---
 
+
+
 ## 6. Puzzle tiles (after style board)
 
-**Settings:** 768 × 768, Alchemy ON, Style Reference = `style_board_tile_red.png` @ **Low** (tiles should stay colorful; don’t over-stylize).
+**Settings:** 768 × 768, Alchemy ON, Style Ref = `style_board_tile_red.png` @ **Low–Mid**
 
 ### 6.1 Base tiles → `assets/images/tiles/`
+
+
 
 #### `tile_red.png`
 
 ```text
-Single square puzzle game gem icon, one object only, centered,
-red attack energy crystal, rich red color #C94B4B, soft inner glow,
-subtle faceted gem cut, simple mobile match-3 tile, minimal detail,
-painterly 2D, transparent background, premium mobile puzzle game, dusk fantasy
+Single glossy match-3 puzzle tile icon, one object only, centered,
+red attack energy gem, rich red #C94B4B, thick clean outline, soft cel shading,
+toy highlight, bold readable, transparent background, casual dusk match-3 RPG
 ```
 
-#### `tile_blue.png`
+
+
+####  ``
 
 ```text
-Single square puzzle game gem icon, one object only, centered,
-blue mana crystal, rich blue color #3D7CC9, soft inner glow,
-subtle faceted gem cut, simple mobile match-3 tile, minimal detail,
-painterly 2D, transparent background, premium mobile puzzle game, dusk fantasy
+Single glossy match-3 puzzle tile icon, one object only, centered,
+blue mana crystal droplet, rich blue #3D7CC9, thick clean outline, soft cel shading,
+toy highlight, bold readable, transparent background, casual dusk match-3 RPG
 ```
+
+
 
 #### `tile_green.png`
 
 ```text
-Single square puzzle game gem icon, one object only, centered,
-green healing crystal, rich green color #3FA86A, soft inner glow,
-subtle faceted gem cut, simple mobile match-3 tile, minimal detail,
-painterly 2D, transparent background, premium mobile puzzle game, dusk fantasy
+Single glossy match-3 puzzle tile icon, one object only, centered,
+green healing leaf crystal, rich green #3FA86A, thick clean outline, soft cel shading,
+toy highlight, bold readable, transparent background, casual dusk match-3 RPG
 ```
+
+
 
 #### `tile_yellow.png`
 
 ```text
-Single square puzzle game gem icon, one object only, centered,
-yellow shield energy crystal, rich gold-yellow color #D4B03C, soft inner glow,
-subtle faceted gem cut, simple mobile match-3 tile, minimal detail,
-painterly 2D, transparent background, premium mobile puzzle game, dusk fantasy
+Single glossy match-3 puzzle tile icon, one object only, centered,
+yellow shield energy gem, rich gold-yellow #D4B03C, thick clean outline, soft cel shading,
+toy highlight, bold readable, transparent background, casual dusk match-3 RPG
 ```
+
+
 
 #### `tile_purple.png`
 
 ```text
-Single square puzzle game gem icon, one object only, centered,
-purple ultimate energy crystal, rich purple color #8B5CB8, soft inner glow,
-subtle faceted gem cut, simple mobile match-3 tile, minimal detail,
-painterly 2D, transparent background, premium mobile puzzle game, dusk fantasy
+Single glossy match-3 puzzle tile icon, one object only, centered,
+purple ultimate star gem, rich purple #8B5CB8, thick clean outline, soft cel shading,
+toy highlight, bold readable, transparent background, casual dusk match-3 RPG
 ```
 
-**Negative (all tiles):** §2 + `multiple gems, grid, match-3 board, explosion`
+**Negative (all tiles):** §2 + `multiple gems, grid, match-3 board, character, explosion`
 
-**Post each:** Remove Background → crop square → export 256 × 256 delivery size
+**Post each:** Remove Background → crop square → export 256 × 256 delivery
 
 ---
 
+
+
 ### 6.2 Shape overlays → `assets/images/tiles/`
 
-White silhouette on transparent. Alchemy **OFF**. No Style Reference.
+White silhouette. Alchemy **OFF**. No Style Reference.
 
 #### `tile_red_shape.png`
 
@@ -250,6 +304,8 @@ pure white #FFFFFF glyph only, transparent background, no gem, no color, no shad
 bold readable shape for colorblind accessibility overlay, mobile game UI icon
 ```
 
+
+
 #### `tile_blue_shape.png`
 
 ```text
@@ -257,6 +313,8 @@ Single white flat icon silhouette, simple mana droplet symbol, centered,
 pure white #FFFFFF glyph only, transparent background, no gem, no color, no shading,
 bold readable shape for colorblind accessibility overlay, mobile game UI icon
 ```
+
+
 
 #### `tile_green_shape.png`
 
@@ -266,6 +324,8 @@ pure white #FFFFFF glyph only, transparent background, no gem, no color, no shad
 bold readable shape for colorblind accessibility overlay, mobile game UI icon
 ```
 
+
+
 #### `tile_yellow_shape.png`
 
 ```text
@@ -273,6 +333,8 @@ Single white flat icon silhouette, simple heater shield symbol, centered,
 pure white #FFFFFF glyph only, transparent background, no gem, no color, no shading,
 bold readable shape for colorblind accessibility overlay, mobile game UI icon
 ```
+
+
 
 #### `tile_purple_shape.png`
 
@@ -286,166 +348,199 @@ bold readable shape for colorblind accessibility overlay, mobile game UI icon
 
 ---
 
-## 7. Hero portraits
 
-**Settings:** 1024 × 1024, Alchemy ON, Style Reference = `style_board_hero_mage.png` @ **Mid**
+
+## 7. Hero battle sprites
+
+**Settings:** 1024 × 1024, Alchemy ON, Style Ref = `style_board_hero_mage.png` @ **Mid**
 
 **Negative:** §2 universal
+
+**Save to:** `assets/heroes/`
 
 ### `hero_mage.png`
 
 ```text
-Single character portrait bust, young arcane mage, hooded deep teal cloak, pale parchment skin,
-focused confident expression, faint purple arcane glow on hands,
-head and shoulders only, facing slightly right, centered,
-solid flat background deep teal #123A44, warm amber gold rim light,
-painterly 2D mobile game hero portrait, clean silhouette, premium fantasy RPG,
-dusk adventure, same art style as reference, no environment
+Full-body chibi mobile game character, young arcane mage, large head short body,
+hooded deep teal cloak with amber trim, pale parchment skin,
+wooden staff with faint purple crystal, idle battle-ready standing pose,
+facing slightly right, centered, feet near bottom,
+solid flat background deep teal #123A44,
+thick clean outlines, soft cel shading, glossy toy finish,
+same art style as reference, no environment, no UI, no health bar
 ```
+
+
 
 ### `hero_knight.png`
 
 ```text
-Single character portrait bust, sturdy armored knight, teal-steel chest plate with amber trim,
-short beard, calm protective expression, shield edge visible at shoulder,
-head and shoulders only, facing slightly right, centered,
-solid flat background deep teal #123A44, warm amber gold rim light,
-painterly 2D mobile game hero portrait, clean silhouette, premium fantasy RPG,
-dusk adventure, same art style as reference, no environment
+Full-body chibi mobile game character, sturdy knight, large head short body,
+teal-steel plate with amber trim, small shield and short sword,
+calm protective idle battle pose, facing slightly right, centered, feet near bottom,
+solid flat background deep teal #123A44,
+thick clean outlines, soft cel shading, glossy toy finish,
+same art style as reference, no environment, no UI, no health bar
 ```
-
-**Save to:** `assets/heroes/`
 
 ---
 
-## 8. Enemy portraits
 
-**Settings:** 1024 × 1024, Alchemy ON, Style Reference = `style_board_enemy_goblin.png` @ **Mid**
+
+## 8. Enemy battle sprites
+
+**Settings:** 1024 × 1024, Alchemy ON, Style Ref = `style_board_enemy_goblin.png` @ **Mid**
 
 **Negative:** §2 universal
+
+**Save to:** `assets/enemies/`
 
 ### `enemy_goblin.png`
 
 ```text
-Single enemy portrait bust, goblin scout, green-grey skin, large pointed ears,
-crude rusty dagger at shoulder, wary mischievous grin,
-head and shoulders only, facing slightly left, centered,
-solid flat background deep teal #123A44, subtle ember accent light,
-painterly 2D mobile game enemy portrait, clean silhouette, no gore
+Full-body chibi mobile game enemy, goblin scout, large head short body,
+green-grey skin, large pointed ears, dual small daggers, leather scraps,
+wary combat pose, facing slightly left, centered, feet near bottom,
+solid flat background deep teal #123A44, subtle ember accents,
+thick clean outlines, soft cel shading, glossy toy finish, no gore, no UI
 ```
+
+
 
 ### `enemy_wolf.png`
 
 ```text
-Single enemy portrait bust, dusk wolf, dark grey fur, amber glowing eyes,
-snarling but readable expression, faint mist on fur tips,
-head and shoulders only, facing forward, centered,
-solid flat background deep teal #123A44, subtle ember accent light,
-painterly 2D mobile game enemy portrait, clean silhouette, fantasy wolf not realistic photo
+Full-body chibi mobile game enemy, dusk wolf, large head short body,
+dark grey fur, amber eyes, snarling but readable, standing on four legs or reared slightly,
+facing slightly left, centered, feet near bottom,
+solid flat background deep teal #123A44, subtle ember accents,
+thick clean outlines, soft cel shading, glossy toy finish, fantasy wolf not photo, no UI
 ```
+
+
 
 ### `enemy_shaman.png`
 
 ```text
-Single enemy portrait bust, bog shaman goblinoid, moss and bone talismans,
-glowing green-teal hex eyes, hunched mystical expression,
-head and shoulders only, facing slightly right, centered,
-solid flat background deep teal #123A44, subtle ember and green mist accent,
-painterly 2D mobile game enemy portrait, clean silhouette, witch doctor fantasy
+Full-body chibi mobile game enemy, bog shaman goblinoid, large head short body,
+moss and bone talismans, glowing green-teal staff tip, hunched mystical pose,
+facing slightly right, centered, feet near bottom,
+solid flat background deep teal #123A44, ember and green mist accents,
+thick clean outlines, soft cel shading, glossy toy finish, no gore, no UI
 ```
+
+
 
 ### `enemy_brute.png`
 
 ```text
-Single enemy portrait bust, stone brute ogre, rocky skin patches, heavy brow,
-slow angry expression, thick neck and shoulders,
-head and shoulders only, facing forward, centered,
-solid flat background deep teal #123A44, subtle ember accent light,
-painterly 2D mobile game enemy portrait, clean silhouette, heavy tank enemy
+Full-body chibi mobile game enemy, stone brute ogre, large head short body,
+rocky skin patches, heavy fists, slow angry idle pose,
+facing forward, centered, feet near bottom,
+solid flat background deep teal #123A44, subtle ember accents,
+thick clean outlines, soft cel shading, glossy toy finish, heavy tank silhouette, no UI
 ```
+
+
 
 ### `enemy_warchief.png`
 
 ```text
-Single enemy portrait bust, orc warchief Ruk, battle scars, crude iron jaw guard,
-fierce commanding glare, small trophy bone on strap,
-head and shoulders only, facing slightly left, centered,
-solid flat background deep teal #123A44, stronger ember rim light, mini-boss presence,
-painterly 2D mobile game boss portrait, clean silhouette, no gore
+Full-body chibi mobile game enemy, orc warchief Ruk, large head short body,
+battle scars, crude iron jaw guard, trophy bone strap, commanding stance with axe,
+facing slightly left, centered, feet near bottom,
+solid flat background deep teal #123A44, stronger ember rim, mini-boss presence,
+thick clean outlines, soft cel shading, glossy toy finish, no gore, no UI
 ```
-
-**Save to:** `assets/enemies/`
 
 ---
 
+
+
 ## 9. Skill icons
 
-**Settings:** 768 × 768, Alchemy ON, Style Reference = `style_board_skill_fireball.png` @ **Low–Mid**
+**Settings:** 768 × 768, Alchemy ON, Style Ref = `style_board_skill_fireball.png` @ **Low–Mid**
 
-**Negative:** §2 + `character face, full scene, button, square frame`
+**Negative:** §2 + `character face, full body, full scene, button, square frame`
 
 **Save to:** `assets/images/skills/`
 
 ### Hero skills
 
+
+
 #### `skill_fireball.png`
 
 ```text
 Single square RPG skill icon, centered fireball spell, orange amber flame sphere,
-compact bold shape, soft gold highlights, transparent background, no border, no text,
-painterly 2D mobile game ability icon, readable at small size
+thick outline, soft cel shading, soft gold highlights, transparent background, no text,
+casual fantasy mobile ability icon, readable at small size
 ```
+
+
 
 #### `skill_arcane_bolt.png`
 
 ```text
 Single square RPG skill icon, centered purple-blue arcane bolt streak,
-sharp magical arrow shape, soft gold accent sparks, transparent background, no text,
-painterly 2D mobile game ability icon, readable at small size
+thick outline, soft cel shading, soft gold sparks, transparent background, no text,
+casual fantasy mobile ability icon, readable at small size
 ```
+
+
 
 #### `skill_basic_slash.png`
 
 ```text
 Single square RPG skill icon, centered sword slash arc, silver blade trail,
-amber gold motion accent, transparent background, no text,
-painterly 2D mobile game ability icon, readable at small size
+amber gold motion accent, thick outline, soft cel shading, transparent background, no text,
+casual fantasy mobile ability icon, readable at small size
 ```
+
+
 
 #### `skill_shield_wall.png`
 
 ```text
 Single square RPG skill icon, centered heraldic shield with glowing barrier,
-yellow-gold shield energy #D4B03C, transparent background, no text,
-painterly 2D mobile game ability icon, readable at small size
+yellow-gold shield energy #D4B03C, thick outline, soft cel shading, transparent background, no text,
+casual fantasy mobile ability icon, readable at small size
 ```
+
+
 
 ### Enemy skills (optional P1)
 
-Use ember accents instead of amber. Prefix filename `enemy_skill_`.
+
 
 #### `enemy_skill_nick.png`
 
 ```text
 Single square RPG skill icon, centered small dagger nick slash, short red ember trail,
-simple aggressive shape, transparent background, no text, enemy ability icon
+thick outline, soft cel shading, transparent background, no text, enemy ability icon
 ```
+
+
 
 #### `enemy_skill_slash.png`
 
 ```text
 Single square RPG skill icon, centered curved blade slash, ember orange arc,
-simple bold shape, transparent background, no text, enemy ability icon
+thick outline, soft cel shading, transparent background, no text, enemy ability icon
 ```
+
+
 
 #### `enemy_skill_heavy.png`
 
 ```text
 Single square RPG skill icon, centered heavy spiked mace swing, thick ember motion arc,
-strong bold shape, transparent background, no text, enemy ability icon
+thick outline, soft cel shading, transparent background, no text, enemy ability icon
 ```
 
 ---
+
+
 
 ## 10. VFX (optional P2)
 
@@ -456,42 +551,48 @@ strong bold shape, transparent background, no text, enemy ability icon
 ### `fx_match_clear.png`
 
 ```text
-Single soft particle burst, small gem fragments dissolving, circular explosion,
-warm white and pale gold sparkles, transparent background, one-shot VFX sprite,
-painterly 2D mobile game effect, no character, no text, centered
+Single soft particle burst, small gem fragments dissolving, circular sparkle,
+warm white and pale gold sparkles, thick outline cartoon VFX, transparent background,
+casual mobile puzzle effect, no character, no text, centered
 ```
+
+
 
 ### `fx_hit.png`
 
 ```text
 Single impact hit flash, short red-orange ember slash burst, radial sparks,
-transparent background, one-shot VFX sprite, painterly 2D mobile game effect,
-no character, centered, readable at small size
+thick outline cartoon VFX, transparent background, no character, centered
 ```
 
 ---
 
+
+
 ## 11. When output goes wrong
 
-| Problem | Fix |
-|---------|-----|
-| Neon / cyberpunk colors | Strengthen §2 negative; add `neon, cyan, magenta` again; lower Style Ref to Low |
-| Full body shown | Add to prompt: `head and shoulders only, cropped at chest` |
-| Two faces / twins | Add negative: `multiple characters, duplicate`; generate 1 image not 4 |
-| Text / runes on image | Increase negative `text, runes, letters`; regenerate |
-| Wrong background | Add: `solid flat background deep teal #123A44 only` |
-| Too photorealistic | Add negative `photograph`; add prompt `painterly 2D illustration` |
-| Tile has gray checkerboard | Run **Remove Background**; don’t screenshot canvas |
-| Style drift on enemy #4 | Re-attach Style Reference; switch ref to best prior enemy |
-| Hands look broken | Portraits shouldn’t show hands — crop tighter or add `hands hidden` |
+
+| Problem                           | Fix                                                                                                  |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Too realistic / adult proportions | Style Ref @ High; add prompt `large head short body, chibi`; negative already bans adult proportions |
+| Neon / cyberpunk                  | Strengthen negative; lower Style Ref slightly if palette warps                                       |
+| Bust / head-and-shoulders only    | Add `full-body, feet visible near bottom`                                                            |
+| Two characters                    | Negative `multiple characters`; generate 1 image                                                     |
+| Text / HP bar in image            | Negative already includes; regenerate                                                                |
+| Busy forest background            | Add `solid flat background deep teal #123A44 only`                                                   |
+| Tile looks like different game    | Re-attach `style_board_tile_red.png`; match outline weight to characters                             |
+| Style drift on enemy #4           | Re-attach goblin style board                                                                         |
+
 
 ---
 
+
+
 ## 12. Post-processing checklist
 
-1. **Remove Background** (tiles, icons, VFX)
-2. **Crop** to content; portraits keep 10% margin
-3. **Resize** to AB1 delivery sizes (portraits 512, tiles 256, skills 128)
+1. **Remove Background** (tiles, icons, VFX; sprites if bg isn’t clean teal)
+2. **Crop** with ~10% margin; keep feet for full-body sprites
+3. **Resize** to AB1 delivery sizes (sprites 512, tiles 256, skills 128)
 4. **Rename** exactly per AB1 §6
 5. Place in correct `assets/` folder
 6. Squint test at phone size — reject if unreadable
@@ -499,27 +600,34 @@ no character, centered, readable at small size
 
 ---
 
-## 13. Training Dusk Element (optional, Premium+)
+
+
+## 13. Training Dusk Chibi Element (optional, Premium+)
 
 After 5 style-board images are approved:
 
 1. **Training & Datasets** → New Dataset
-2. Upload all 5 style-board PNGs + any extra good rejects from same session (max ~15)
-3. Name: `Mythora_Dusk_Style`
-4. Train on **Flux Dev** or platform-recommended base for Elements
-5. Apply Element strength **0.55–0.70** for portraits; **0.45–0.55** for tiles/icons
+2. Upload all 5 style-board PNGs (+ good same-session rejects, max ~15)
+3. Name: `Mythora_Dusk_Chibi`
+4. Train on platform-recommended base for Elements
+5. Strength **0.55–0.70** characters; **0.45–0.55** tiles/icons
 
-If training fails or wastes your monthly slot, **Style Reference alone is enough** for Phase 1.
+Style Reference alone is enough for Phase 1 if training isn’t worth the slot.
 
 ---
 
+
+
 ## Quick reference — filenames
 
-| Prompt section | Output path |
-|----------------|-------------|
+
+| Prompt section | Output path                  |
+| -------------- | ---------------------------- |
 | §5 Style board | `assets/images/style_board/` |
-| §6 Tiles | `assets/images/tiles/` |
-| §7 Heroes | `assets/heroes/` |
-| §8 Enemies | `assets/enemies/` |
-| §9 Skills | `assets/images/skills/` |
-| §10 VFX | `assets/images/vfx/` |
+| §6 Tiles       | `assets/images/tiles/`       |
+| §7 Heroes      | `assets/heroes/`             |
+| §8 Enemies     | `assets/enemies/`            |
+| §9 Skills      | `assets/images/skills/`      |
+| §10 VFX        | `assets/images/vfx/`         |
+
+

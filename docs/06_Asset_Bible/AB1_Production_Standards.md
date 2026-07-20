@@ -2,12 +2,12 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Active — first art pass |
-| **Last Updated** | 2026-07-10 |
+| **Status** | Active — chibi battle stage lock |
+| **Last Updated** | 2026-07-11 |
 | **Authority** | Sizes, naming, export, AI workflow; visual identity → [Theme](../02_Design_System/Theme.md) |
-| **Related** | [Asset Bible README](README.md) · [Heroes](../01_Game_Design/Heroes.md) · [Enemies](../01_Game_Design/Enemies.md) · [Theme](../02_Design_System/Theme.md) |
+| **Related** | [Asset Bible README](README.md) · [Decisions](../00_Project/Decisions.md) · [Leonardo Prompt Pack](AB1_Leonardo_Prompt_Pack.md) |
 
-AB1 locks how Mythora assets are **named, sized, exported, reviewed, and wired into Flutter**. Use it before generating the first hero/enemy/tile pass.
+AB1 locks how Mythora assets are **named, sized, exported, reviewed, and wired into Flutter**. Art style lock: **chibi battle stage** (2026-07-11).
 
 ---
 
@@ -17,49 +17,53 @@ AB1 locks how Mythora assets are **named, sized, exported, reviewed, and wired i
 
 | Domain | Purpose | Priority |
 |--------|---------|----------|
-| Style board | Lock Dusk look before batch generation | P0 |
-| Puzzle tiles | 5 resource colors + shape overlay | P0 |
-| Hero portraits | Battle header + roster bust | P0 |
-| Enemy portraits | Battle header + campaign node | P0 |
-| Skill icons | Hero + enemy skill buttons | P1 |
-| UI chrome | Optional panel/button textures (prefer Flutter widgets) | P2 |
+| Style board | Lock chibi + glossy tile look before batch generation | P0 |
+| Puzzle tiles | 5 resource colors + shape overlay (same style family as characters) | P0 |
+| Hero battle sprites | Full-body chibi for battle stage (left) + roster cards | P0 |
+| Enemy battle sprites | Full-body chibi for battle stage (right) + campaign nodes | P0 |
+| Skill icons | Hero + enemy skill buttons (matching outline weight) | P1 |
+| UI chrome | Prefer Flutter widgets; optional panel textures | P2 |
 | VFX | Match clear, hit flash, cast puff (single-frame or 2–3 frames) | P2 |
 
 ### Out of scope (AB1)
 
-- Animated character spritesheets
-- Full environment / map art
+- Multi-frame idle/attack spritesheets (→ **AB2**)
+- Full painted battle environments / forest scenes
 - Store marketing packs (AB4+)
 - 3D meshes
-- Per-campaign world kits
+- Semi-realistic or painterly **adult bust** portraits as primary art
 
 ---
 
-## 2. Art direction lock (Dusk)
+## 2. Art direction lock (Dusk + Chibi battle)
 
-All generated assets must read as **dusk adventure** — not neon arcade, not stone citadel.
+All generated assets must read as **one game**: dusk palette + **chibi / SD** characters + **glossy cartoon** tiles.
 
 ### Do
 
 - Deep teal / ink backgrounds (`#0B1C24`, `#123A44`)
-- Parchment skin tones and warm highlights (`#E8DFC8`, `#D4A24C`, `#E6C87A`)
-- Ember only for enemy danger accents (`#C45C3A`)
-- Painterly 2D with **clean silhouettes** readable at phone scale
-- Soft rim light; restrained detail on faces at bust scale
+- Parchment skin / cloth highlights (`#E8DFC8`, `#D4A24C`, `#E6C87A`)
+- Ember for enemy danger accents (`#C45C3A`)
+- **Chibi / super-deformed** full-body figures (large head, short body)
+- **Thick clean outlines**, soft **cel shading**, readable silhouette at phone scale
+- Glossy match-3 icons that share the same outline/toy finish as characters
+- Battle stage framing: hero left, enemy right; **HP bars stay in UI** (Flutter), not baked into PNG
 
 ### Don't
 
-- Cyan/magenta neon glow (Dot Clash territory)
+- Photoreal / cinematic faces, skin pores, Unreal/octane look
+- Painterly adult bust portraits as the style board
+- Cyan/magenta neon (Dot Clash)
 - Grey stone fortress / LLDL citadel motifs
-- Photorealistic faces or busy backgrounds behind portraits
+- Mixing styles (realistic mage + chibi goblin + flat color squares)
 - Text baked into PNGs (Flutter renders all copy)
-- Gradients so dark tiles disappear on `deepTeal` board chrome
+- Busy full environment art behind characters (solid teal or soft simple ground only)
 
 ### Style anchor sentence
 
-Use this verbatim in AI prompts until a custom LoRA exists:
+Use this verbatim in AI prompts until a custom LoRA / Element exists:
 
-> Mobile game art, dusk fantasy adventure, deep teal and ink palette, parchment and amber gold accents, painterly 2D illustration, clean readable silhouette, premium mobile RPG, no neon, no photorealism.
+> Mobile puzzle RPG battle art, chibi super-deformed character, thick clean outlines, soft cel shading, dusk teal and amber palette, glossy toy-like finish, premium casual fantasy match-3 RPG, readable at phone size, no photorealism, no neon.
 
 ---
 
@@ -68,19 +72,21 @@ Use this verbatim in AI prompts until a custom LoRA exists:
 | Role | Tool | Use for |
 |------|------|---------|
 | **Primary** | [Leonardo AI](https://leonardo.ai) | Heroes, enemies, tiles, skill icons, VFX |
-| **UI batch** | [ForgeGUI](https://forgegui.com) or [UI Forge](https://uiforge.vikings.studio) | Panel textures, decorative frames (if not pure Flutter) |
-| **Concept only** | Midjourney | Mood boards, store hero art — **not** production batches |
+| **UI batch** | [ForgeGUI](https://forgegui.com) or [UI Forge](https://uiforge.vikings.studio) | Panel textures (if not pure Flutter) |
+| **Concept only** | Midjourney | Mood boards — **not** production batches |
 | **Scale later** | Scenario.gg | 100+ assets with trained private model |
 
 ### Production workflow
 
 ```text
-1. Generate style board (§8) → human approve
-2. Upload style board to Leonardo as Image Guidance / train LoRA (optional)
-3. Batch generate by domain using prompt templates (§10)
-4. Human review checklist (§11)
-5. Export to assets/ paths (§5–§6)
-6. Wire assetPath in HeroDef / EnemyDef when UI consumes images
+1. Use bootstrap style seed style_seed_battle_mage.png
+   as Leonardo Style Reference @ High (Phoenix text-only drifts realistic)
+2. Generate style board (§4) → human approve
+3. Upload approved board as Style Reference / train Element (optional)
+4. Batch generate by domain using [Leonardo Prompt Pack](AB1_Leonardo_Prompt_Pack.md)
+5. Human review checklist (§11)
+6. Export to assets/ paths (§5–§6)
+7. Wire Image.asset in battle stage + board when ready
 ```
 
 **Rule:** No asset ships without passing §11 review.
@@ -89,17 +95,21 @@ Use this verbatim in AI prompts until a custom LoRA exists:
 
 ## 4. Golden reference set (style board)
 
-Create **five** approved PNGs before batch production. Store sources in `assets/images/style_board/` (generated) and keep editable masters off-repo if needed.
+Create **five** approved PNGs before batch production. Store in `assets/images/style_board/`.
 
 | File | Content | Tool |
 |------|---------|------|
-| `style_board_hero_mage.png` | Mage bust, neutral pose, teal bg | Leonardo |
-| `style_board_enemy_goblin.png` | Goblin bust, slight menace, teal bg | Leonardo |
-| `style_board_tile_red.png` | Red attack tile with gem/sword shape | Leonardo |
+| `style_board_hero_mage.png` | Full-body chibi mage, idle battle pose, teal bg | Leonardo |
+| `style_board_enemy_goblin.png` | Full-body chibi goblin, slight menace, teal bg | Leonardo |
+| `style_board_tile_red.png` | Glossy red attack tile (same outline family) | Leonardo |
 | `style_board_skill_fireball.png` | Fireball skill icon, square | Leonardo |
-| `style_board_ui_panel.png` | Panel corner sample OR full chip row mock | ForgeGUI |
+| `style_board_ui_panel.png` | Optional panel sample OR skip (Flutter only) | ForgeGUI |
 
-These five define palette, line weight, and contrast. Every later asset should be compared side-by-side against this set.
+Bootstrap seed (not approved board): `style_seed_battle_mage.png`.
+
+Deprecated: `style_seed_hero_mage_bust_deprecated.png` (painterly bust experiment — do not use).
+
+These five define palette, outline weight, chibi proportions, and tile gloss. Compare every later asset side-by-side.
 
 ---
 
@@ -107,8 +117,8 @@ These five define palette, line weight, and contrast. Every later asset should b
 
 ```text
 assets/
-├── heroes/              # hero_{id}.png
-├── enemies/             # enemy_{id}.png
+├── heroes/              # hero_{id}.png  (full-body chibi battle sprite)
+├── enemies/             # enemy_{id}.png (full-body chibi battle sprite)
 ├── images/
 │   ├── style_board/     # AB1 golden references (§4)
 │   ├── tiles/           # tile_{color}.png, tile_{color}_shape.png
@@ -118,8 +128,6 @@ assets/
 │   └── vfx/             # fx_{name}.png or fx_{name}_{frame}.png
 └── levels/              # JSON only — not art
 ```
-
-`pubspec.yaml` already declares `assets/heroes/`, `assets/enemies/`, and `assets/images/` (recursive via folder registration — add subfolders to pubspec when first PNG lands).
 
 ---
 
@@ -155,27 +163,15 @@ Phase 1 roster:
 
 Colors: `red`, `blue`, `green`, `yellow`, `purple`.
 
-### Skills
+### Skills / icons / VFX
 
-| Pattern | Example | Maps to |
-|---------|---------|---------|
-| `skill_{id}.png` | `skill_fireball.png` | `SkillDef.id` |
-| `enemy_skill_{id}.png` | `enemy_skill_nick.png` | `EnemySkill.id` |
-
-### Icons & UI
-
-| Pattern | Example | Use |
-|---------|---------|-----|
-| `icon_resource_{id}.png` | `icon_resource_mana.png` | Resource chip |
-| `icon_intent_attack.png` | — | Enemy intent telegraph |
-| `ui_panel_{name}.png` | `ui_panel_battle.png` | Optional 9-slice |
-| `fx_{name}.png` | `fx_match_clear.png` | VFX sprite |
+Same patterns as before: `skill_{id}.png`, `icon_resource_{id}.png`, `fx_{name}.png`.
 
 ### Forbidden
 
-- Display names in filenames (`Fireball Skill!!!.png`)
-- Random hashes (`hero_mage_v2_final_FINAL.png`)
-- Mixed casing (`Hero_Mage.png`)
+- Display names in filenames
+- Random hashes / `final_FINAL`
+- Mixed casing
 
 ---
 
@@ -186,65 +182,51 @@ Colors: `red`, `blue`, `green`, `yellow`, `purple`.
 | Property | Value |
 |----------|-------|
 | Format | PNG-24, sRGB |
-| Alpha | Straight alpha; no premultiplied unless pipeline requires |
-| Color profile | sRGB IEC61966-2.1 |
-| Max file size (guideline) | ≤ 300 KB per portrait; ≤ 80 KB per tile @2x |
+| Alpha | Straight alpha |
+| Max file size (guideline) | ≤ 350 KB per battle sprite; ≤ 80 KB per tile @2x |
 | Compression | TinyPNG or pngquant after review — visually lossless |
-| DPI metadata | 72 DPI (Flutter uses logical pixels) |
 
 ### Master vs delivery
 
-Generate at **master** size, then export **delivery** PNG. Keep masters at 2× delivery where noted.
-
 | Asset | Master (px) | Delivery @2x (px) | Display @1x (logical pt) | Notes |
 |-------|------------:|------------------:|-------------------------:|-------|
-| Hero portrait | 1024 × 1024 | 512 × 512 | 256 × 256 | Bust centered; safe margin 10% |
-| Enemy portrait | 1024 × 1024 | 512 × 512 | 256 × 256 | Same frame as hero for alignment |
-| Puzzle tile | 512 × 512 | 256 × 256 | ~44–56 pt (6×6 board) | Square; corner radius applied in UI |
+| Hero battle sprite | 1024 × 1024 | 512 × 512 | ~180–220 tall on stage | Full body; feet near bottom; ~10% margin |
+| Enemy battle sprite | 1024 × 1024 | 512 × 512 | Same scale family as hero | Align ground line with hero |
+| Puzzle tile | 512 × 512 | 256 × 256 | ~44–56 pt (6×6 board) | Square; radius in UI |
 | Tile shape overlay | 512 × 512 | 256 × 256 | Same as tile | White glyph, full alpha |
 | Skill icon | 512 × 512 | 128 × 128 | 64 × 64 | Simple icon; no text |
 | Resource icon | 256 × 256 | 64 × 64 | 32 × 32 | HUD chip |
-| UI panel (9-slice) | 512 × 512 min | — | — | See §7.1 |
 | VFX single | 512 × 512 | 256 × 256 | — | Center-origin |
-| VFX sheet | 2048 × 512 max | — | — | Horizontal strip, ≤8 frames |
-
-**Flutter note:** Phase 1 may load delivery @2x PNGs directly via `Image.asset` without `@2x` suffixes; name files without density suffix for simplicity.
 
 ### 7.1 Nine-slice UI panels
 
-If using raster panels:
-
-- Canvas includes visible corner ornament + stretchable center
-- **Fixed corners:** 48 × 48 px @2x (24 pt @1x)
-- **Minimum center:** 32 × 32 px repeatable
-- Export with transparent outside the panel bounds
-- Document slice insets in filename sidecar: `ui_panel_battle.nine.json` (optional AB1.1)
-
-Prefer **Flutter `DecoratedBox` + `MythoraColors`** over raster panels when possible.
+Prefer **Flutter `DecoratedBox` + `MythoraColors`**. If raster: fixed corners 48×48 @2x; document insets optionally.
 
 ---
 
 ## 8. Domain specs
 
-### 8.1 Hero & enemy portraits
+### 8.1 Hero & enemy battle sprites
 
-- **Framing:** Head + shoulders bust; eyes in upper third
-- **Background:** Solid `#123A44` or soft teal gradient — **no** busy scenes
-- **Lighting:** Warm key from upper left; subtle amber rim
-- **Expression:** Readable emotion at 256 pt width on iPhone SE
-- **Alignment:** Face center ±5% horizontal; chin above bottom 15%
+- **Framing:** Full-body chibi; standing idle / battle-ready; feet near bottom third
+- **Proportions:** Large head, short limbs — consistent across roster
+- **Background:** Solid `#123A44` — **no** busy forest/ruin scenes (Flutter can add a simple stage later)
+- **Outline:** Thick, even, dark; soft cel fill (not skin-pore realism)
+- **Weapons:** Readable at stage size (staff, sword, daggers)
+- **Alignment:** Same ground line / scale across heroes and enemies for Flutter `Row` staging
+- **HP / names:** Never painted into the PNG — Flutter widgets only
 
-Enemy portraits may use slightly more ember in accents; heroes use amber/gold.
+Roster / collection cards may reuse these sprites (scale down or soft vignette in UI).
 
 ### 8.2 Puzzle tiles
 
-Board is **6×6**, cells sized responsively in `AnimatedPuzzleBoard`. Tiles must read at ~44 pt.
+Board is **6×6**. Tiles must feel like the **same product** as chibi characters: glossy, outlined, bold.
 
 Each color tile includes:
 
-1. **Base gem** — fill close to `MythoraColors.tile*` (see [Theme](../02_Design_System/Theme.md))
-2. **Inner highlight** — lighter core for depth
-3. **Shape overlay** (separate PNG or drawn in Flutter Phase 1.1):
+1. **Base icon** — fill close to `MythoraColors.tile*` ([Theme](../02_Design_System/Theme.md))
+2. **Inner highlight** — toy/gloss highlight
+3. **Shape overlay** (separate PNG):
 
 | Color | Resource | Shape |
 |-------|----------|-------|
@@ -254,139 +236,103 @@ Each color tile includes:
 | yellow | shield | shield |
 | purple | ultimate | star / crown |
 
-Until shape overlays ship, **do not rely on color alone** for accessibility — plan the `_shape` files in the same pass.
-
 ### 8.3 Skill icons
 
 - Square, 80% glyph / 20% padding
-- Single focal object; no tiny detail
-- Hero skills: amber accent border optional (can be Flutter `Container` border)
-- Enemy skills: ember accent optional
+- Same outline weight as tiles
+- No tiny unreadable detail
 
 ### 8.4 VFX (lightweight)
 
-Match animation timings in [Animations](../02_Design_System/Animations.md):
-
-| FX | Duration target | Frames |
-|----|-----------------|--------|
-| Match clear | 220 ms | 1–3 |
-| Combat hit | 320 ms | 1–2 |
-| Skill cast | 320 ms | 2–3 |
-
-Prefer **Flutter opacity/scale tweens** over sprite animation when a single PNG + code motion suffices.
+Match timings in [Animations](../02_Design_System/Animations.md). Prefer Flutter tweens + 1 PNG when possible. Character idle/attack sheets → **AB2**.
 
 ---
 
 ## 9. Accessibility
 
-- Every tile color has a paired `tile_{color}_shape.png` (white silhouette, alpha)
-- Minimum contrast between tile base and `deepTeal` board: **3:1** for distinguishability
-- Portrait expressions and skill icons should remain recognizable when desaturated — test in Photopea
+- Every tile color has `tile_{color}_shape.png` (white silhouette)
+- Minimum contrast tile vs `deepTeal` board: **3:1**
+- Test sprites/icons desaturated for shape readability
 
 ---
 
 ## 10. Prompt templates
 
-Replace `{SUBJECT}` and `{DETAIL}`. Append the style anchor sentence (§2).
+Replace `{SUBJECT}` and `{DETAIL}`. Append the style anchor sentence (§2). Full copy-paste packs live in [AB1_Leonardo_Prompt_Pack.md](AB1_Leonardo_Prompt_Pack.md).
 
-### Leonardo — hero portrait
-
-```text
-Character portrait bust, {SUBJECT}, {DETAIL}, facing slightly right,
-shoulders visible, neutral battle-ready expression,
-solid deep teal background #123A44,
-warm amber rim light, painterly mobile game illustration,
-clean silhouette, no text, no watermark.
-Mobile game art, dusk fantasy adventure, deep teal and ink palette,
-parchment and amber gold accents, painterly 2D illustration,
-clean readable silhouette, premium mobile RPG, no neon, no photorealism.
-```
-
-**Mage example:** `{SUBJECT}` = young arcane mage with hooded cloak; `{DETAIL}` = faint purple arcane glow on hands.
-
-### Leonardo — enemy portrait
+### Leonardo — hero battle sprite
 
 ```text
-Enemy character portrait bust, {SUBJECT}, {DETAIL}, menacing but readable,
-solid deep teal background #123A44, subtle ember accent lighting,
-painterly mobile game illustration, clean silhouette, no text.
-Mobile game art, dusk fantasy adventure, deep teal and ink palette,
-parchment and amber gold accents, painterly 2D illustration,
-clean readable silhouette, premium mobile RPG, no neon, no photorealism.
+Full-body chibi mobile game character, {SUBJECT}, {DETAIL},
+large head short body, standing idle battle pose, facing slightly right,
+centered, solid flat deep teal background #123A44,
+thick clean outlines, soft cel shading, glossy toy finish,
+no text, no UI bars, no environment.
+Mobile puzzle RPG battle art, chibi super-deformed character, thick clean outlines,
+soft cel shading, dusk teal and amber palette, glossy toy-like finish,
+premium casual fantasy match-3 RPG, readable at phone size, no photorealism, no neon.
 ```
 
-**Goblin example:** `{SUBJECT}` = goblin scout with crude dagger; `{DETAIL}` = large ears, wary grin.
+### Leonardo — enemy battle sprite
+
+```text
+Full-body chibi mobile game enemy, {SUBJECT}, {DETAIL},
+large head short body, standing combat pose, facing slightly left,
+centered, solid flat deep teal background #123A44,
+thick clean outlines, soft cel shading, subtle ember accents,
+no gore, no text, no UI bars.
+Mobile puzzle RPG battle art, chibi super-deformed character, thick clean outlines,
+soft cel shading, dusk teal and amber palette, glossy toy-like finish,
+premium casual fantasy match-3 RPG, readable at phone size, no photorealism, no neon.
+```
 
 ### Leonardo — puzzle tile
 
 ```text
-Single square game gem icon, {COLOR_NAME} resource crystal,
-color hex {HEX}, soft inner glow, subtle faceted gem shape,
-centered on transparent background, mobile puzzle game tile,
-no text, minimal detail, readable at small size.
-Mobile game art, dusk fantasy adventure, deep teal and ink palette,
-parchment and amber gold accents, painterly 2D illustration,
-clean readable silhouette, premium mobile RPG, no neon, no photorealism.
+Single glossy match-3 puzzle icon, {COLOR_NAME}, color hex {HEX},
+thick clean outline, soft cel shading, toy highlight,
+centered, transparent background, bold readable at small size, no text.
+Mobile puzzle RPG battle art, glossy toy-like finish, dusk teal and amber palette,
+premium casual fantasy match-3 RPG, no photorealism, no neon.
 ```
 
 | Color | `{COLOR_NAME}` | `{HEX}` |
 |-------|----------------|---------|
-| red | attack energy | `#C94B4B` |
-| blue | mana | `#3D7CC9` |
-| green | healing | `#3FA86A` |
-| yellow | shield | `#D4B03C` |
-| purple | ultimate | `#8B5CB8` |
+| red | red attack energy orb or gem with sword hint | `#C94B4B` |
+| blue | blue mana droplet crystal | `#3D7CC9` |
+| green | green healing leaf crystal | `#3FA86A` |
+| yellow | yellow shield energy gem | `#D4B03C` |
+| purple | purple ultimate star gem | `#8B5CB8` |
 
 ### Leonardo — skill icon
 
 ```text
-Square skill icon, {SKILL_DESCRIPTION}, centered glyph,
-transparent background, amber gold accent details,
-simple readable shape, mobile RPG ability icon, no text border.
-Mobile game art, dusk fantasy adventure, deep teal and ink palette,
-parchment and amber gold accents, painterly 2D illustration,
-clean readable silhouette, premium mobile RPG, no neon, no photorealism.
-```
-
-### ForgeGUI — UI panel sample
-
-```text
-Game UI panel corner texture, dusk fantasy mobile RPG,
-deep teal panel #123A44, mist border #1E4D57,
-subtle amber gold corner ornament, parchment-friendly,
-flat center area for 9-slice stretch, no text, no buttons.
+Square skill icon, {SKILL_DESCRIPTION}, thick outline, soft cel shading,
+centered glyph, transparent background, amber gold accents, no text.
+Mobile puzzle RPG battle art, glossy toy-like finish, dusk teal and amber palette,
+premium casual fantasy match-3 RPG, no photorealism, no neon.
 ```
 
 ---
 
 ## 11. Review checklist (required before ship)
 
-Every asset batch must pass **all** items:
-
-- [ ] Matches style board (§4) in palette and line weight
+- [ ] Matches style board (§4) — chibi proportions + outline weight + tile gloss
 - [ ] Correct filename and folder (§5–§6)
 - [ ] Delivery dimensions (§7)
-- [ ] Readable at target display size on 375 × 667 (iPhone SE class)
-- [ ] No baked text, logos, or watermarks
-- [ ] Alpha clean — no halos on teal background
+- [ ] Readable at target size on 375 × 667 (iPhone SE class)
+- [ ] No baked text, HP bars, logos, or watermarks
+- [ ] Alpha clean on teal
 - [ ] File size within guideline
-- [ ] ID matches code catalog ([Heroes](../01_Game_Design/Heroes.md), [Enemies](../01_Game_Design/Enemies.md))
-- [ ] Compared desaturated for shape readability (tiles/skills)
+- [ ] ID matches code catalog
+- [ ] Desaturated shape test (tiles/skills)
+- [ ] Same ground-line scale as paired battle sprites
 
-**Reject and regenerate** if style drift, wrong ID, or illegibility at phone scale.
+**Reject** photoreal faces, adult proportions, or tiles that look like a different game.
 
 ---
 
 ## 12. Flutter integration (when wiring)
-
-Optional `assetPath` on defs (future):
-
-```dart
-// hero_def.dart — pattern only; not required until UI loads PNGs
-final String? portraitAsset; // 'assets/heroes/hero_mage.png'
-```
-
-Load convention:
 
 ```dart
 Image.asset('assets/heroes/hero_${hero.id}.png')
@@ -395,7 +341,7 @@ Image.asset('assets/images/tiles/tile_red.png')
 Image.asset('assets/images/skills/skill_${skill.id}.png')
 ```
 
-Until portraits land, UI continues using color blocks + typography from `MythoraColors`.
+Battle stage (future): hero sprite left + enemy sprite right + Flutter HP bars overlaid. Until sprites land, keep color blocks + typography.
 
 ---
 
@@ -403,13 +349,14 @@ Until portraits land, UI continues using color blocks + typography from `Mythora
 
 | Step | Deliverables |
 |------|--------------|
-| 1 | Style board (§4) approved |
+| 1 | Style seed → style board (§4) approved |
 | 2 | Five tiles + five shape overlays |
-| 3 | `hero_mage`, `hero_knight` |
-| 4 | Twilight Road enemies (5) |
+| 3 | `hero_mage`, `hero_knight` full-body |
+| 4 | Twilight Road enemies (5) full-body |
 | 5 | Mage/knight skills (4 icons) |
-| 6 | Goblin enemy skills (3 icons) — optional P1 |
-| 7 | `fx_match_clear`, `fx_hit` — optional P2 |
+| 6 | Goblin enemy skills (3) — optional P1 |
+| 7 | Wire battle stage sprites above board |
+| 8 | `fx_match_clear`, `fx_hit` — optional P2 |
 
 ---
 
@@ -417,9 +364,9 @@ Until portraits land, UI continues using color blocks + typography from `Mythora
 
 | Doc | When |
 |-----|------|
-| AB2 — Animation & VFX sheets | When multi-frame VFX replace tweens |
-| AB3 — Cosmetic / rarity frames | When shop cosmetics ship |
-| AB4 — Store & marketing | Before App Store / Play listing |
+| AB2 — Animation & VFX sheets | Idle / attack / hit frames for stage characters |
+| AB3 — Cosmetic / rarity frames | Shop cosmetics |
+| AB4 — Store & marketing | Store listing |
 
 ---
 
@@ -427,4 +374,5 @@ Until portraits land, UI continues using color blocks + typography from `Mythora
 
 | Date | Change |
 |------|--------|
-| 2026-07-10 | AB1 initial lock — sizes, naming, tooling, prompts, style board |
+| 2026-07-10 | AB1 initial lock — sizes, naming, tooling, painterly bust prompts |
+| 2026-07-11 | **Art style relock:** chibi battle stage + matching glossy tiles; bust portraits deprecated |

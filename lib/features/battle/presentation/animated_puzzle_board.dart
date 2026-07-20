@@ -28,7 +28,7 @@ class AnimatedPuzzleBoard extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          const gap = 4.0;
+          const gap = 3.0;
           final cellW =
               (constraints.maxWidth - gap * (board.width - 1)) / board.width;
           final cellH =
@@ -68,7 +68,8 @@ class AnimatedPuzzleBoard extends StatelessWidget {
                       gap: gap,
                       selected: battle.selectedCell == (row, col),
                       clearing: battle.clearingCells.contains((row, col)),
-                      spawning: battle.spawningIds.contains(board.at(row, col).id),
+                      spawning:
+                          battle.spawningIds.contains(board.at(row, col).id),
                       interactive: !battle.inputLocked,
                       onTap: () => onTap(row, col),
                     ),
@@ -180,15 +181,16 @@ class _BoardTileState extends State<_BoardTile> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 120),
               decoration: BoxDecoration(
-                color: _tileColor(widget.color),
+                color: MythoraColors.ink.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(8),
                 border: widget.selected
                     ? Border.all(color: MythoraColors.parchment, width: 2)
-                    : Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                    : Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 boxShadow: widget.clearing
                     ? [
                         BoxShadow(
-                          color: _tileColor(widget.color).withValues(alpha: 0.75),
+                          color: _accentColor(widget.color)
+                              .withValues(alpha: 0.75),
                           blurRadius: 14,
                           spreadRadius: 2,
                         ),
@@ -201,9 +203,20 @@ class _BoardTileState extends State<_BoardTile> {
                         ),
                       ],
               ),
-              child: widget.special == TileSpecial.none
-                  ? null
-                  : Center(
+              clipBehavior: Clip.none,
+              child: Stack(
+                fit: StackFit.expand,
+                clipBehavior: Clip.none,
+                children: [
+                  Transform.scale(
+                    scale: 1.22,
+                    child: _TileArt(
+                      color: widget.color,
+                      special: widget.special,
+                    ),
+                  ),
+                  if (widget.special != TileSpecial.none)
+                    Center(
                       child: Icon(
                         switch (widget.special) {
                           TileSpecial.rocketVertical => Icons.south,
@@ -214,9 +227,14 @@ class _BoardTileState extends State<_BoardTile> {
                           TileSpecial.none => Icons.circle,
                         },
                         color: MythoraColors.parchment,
-                        size: widget.cellW * 0.45,
+                        size: widget.cellW * 0.42,
+                        shadows: const [
+                          Shadow(blurRadius: 4, color: Colors.black87),
+                        ],
                       ),
                     ),
+                ],
+              ),
             ),
           ),
         ),
@@ -224,12 +242,61 @@ class _BoardTileState extends State<_BoardTile> {
     );
   }
 
-  Color _tileColor(TileColor? color) => switch (color) {
+  Color _accentColor(TileColor? color) => switch (color) {
         TileColor.red => MythoraColors.tileRed,
         TileColor.blue => MythoraColors.tileBlue,
         TileColor.green => MythoraColors.tileGreen,
         TileColor.yellow => MythoraColors.tileYellow,
         TileColor.purple => MythoraColors.tilePurple,
-        null => MythoraColors.ink,
+        null => MythoraColors.amber,
       };
+}
+
+/// Puzzle gem art from AB1 tile PNGs; falls back to tint if asset missing.
+class _TileArt extends StatelessWidget {
+  const _TileArt({
+    required this.color,
+    required this.special,
+  });
+
+  final TileColor? color;
+  final TileSpecial special;
+
+  static String? assetFor(TileColor? color) => switch (color) {
+        TileColor.red => 'assets/images/tiles/tile_red.png',
+        TileColor.blue => 'assets/images/tiles/tile_blue.png',
+        TileColor.green => 'assets/images/tiles/tile_green.png',
+        TileColor.yellow => 'assets/images/tiles/tile_yellow.png',
+        TileColor.purple => 'assets/images/tiles/tile_purple.png',
+        null => null,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final path = assetFor(color);
+    if (path == null) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: special == TileSpecial.none
+              ? MythoraColors.ink
+              : MythoraColors.mist,
+          borderRadius: BorderRadius.circular(6),
+        ),
+      );
+    }
+    return Image.asset(
+      path,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => ColoredBox(
+        color: switch (color) {
+          TileColor.red => MythoraColors.tileRed,
+          TileColor.blue => MythoraColors.tileBlue,
+          TileColor.green => MythoraColors.tileGreen,
+          TileColor.yellow => MythoraColors.tileYellow,
+          TileColor.purple => MythoraColors.tilePurple,
+          null => MythoraColors.ink,
+        },
+      ),
+    );
+  }
 }

@@ -106,4 +106,24 @@ Authority: product/engineering choices that override or clarify [PHASES](../PHAS
 
 **Impact:** `docs/06_Asset_Bible/AB1_Production_Standards.md`, `assets/images/*` subfolders, style board in `assets/images/style_board/`.
 
+**Status:** Accepted — art *style* superseded by 2026-07-11 chibi battle lock below; naming/sizes/tooling still apply
+
+---
+
+## 2026-07-11 — Art style: chibi battle stage (not painterly busts)
+
+**Decision:** Mythora production art is **chibi / super-deformed 2D** matched to a puzzle-RPG **battle stage**:
+
+- Full-body hero (left) and enemy (right) on the upper battle half
+- HP bars stay on/near characters (characters do not replace numbers)
+- Puzzle tiles and skill icons share the same thick-outline, soft cel-shaded, glossy “toy” look
+- Dusk palette (teal / parchment / amber / ember) remains — not neon, not photoreal
+- Collection / roster cards reuse the same full-body sprites (or crops), not a separate semi-real portrait style
+
+**Rejected:** Painterly adult bust portraits as the primary style lock (Leonardo Phoenix text-only drifted cinematic; busts do not stage well above the board).
+
+**Reason:** Future battle UI replaces the flat name/HP header with staged characters; board + characters must be one language. Chibi reads at phone scale and is cheaper to idle/hit-polish later (AB2).
+
+**Impact:** Rewrite [AB1 Production Standards](../06_Asset_Bible/AB1_Production_Standards.md) + [Leonardo Prompt Pack](../06_Asset_Bible/AB1_Leonardo_Prompt_Pack.md); style seed `assets/images/style_board/style_seed_battle_mage.png`; old bust seed deprecated.
+
 **Status:** Accepted

@@ -12,6 +12,7 @@
 - Satisfying but **short** — battle stays readable
 - Cascade motion leads; HUD motion stays minimal
 - Prefer ease-out curves; avoid elastic bounce on core HUD
+- Character idle/attack sheets deferred to **AB2** (chibi stage sprites are still PNGs in AB1)
 
 ## Phase 1 duration roles
 

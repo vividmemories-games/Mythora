@@ -3,15 +3,17 @@
 | Field | Value |
 |-------|-------|
 | **Status** | Active |
-| **Last Updated** | 2026-07-10 |
+| **Last Updated** | 2026-07-11 |
 | **Code** | `lib/core/theme/app_theme.dart` |
-| **Related** | [Vision](../00_Project/Vision.md) · [Animations](Animations.md) |
+| **Related** | [Vision](../00_Project/Vision.md) · [Animations](Animations.md) · [AB1](../06_Asset_Bible/AB1_Production_Standards.md) |
 
 ## Identity
 
 Dusk adventure: deep teal / ink surfaces, parchment text, amber / soft-gold accents, ember for danger.
 
-**Not** Dot Clash neon. **Not** Labyrinth Legends stone-citadel LLDL.
+**Character & board art (2026-07-11):** chibi / super-deformed battle sprites + glossy match-3 icons in the same outline family. See [AB1](../06_Asset_Bible/AB1_Production_Standards.md) and [Decisions](../00_Project/Decisions.md).
+
+**Not** Dot Clash neon. **Not** Labyrinth Legends stone-citadel LLDL. **Not** photoreal / cinematic bust portraits.
 
 ## Color tokens (`MythoraColors`)
 
