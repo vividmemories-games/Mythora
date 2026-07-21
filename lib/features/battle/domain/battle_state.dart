@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../../heroes/domain/hero_def.dart';
+import '../../prep/domain/prep_item.dart';
 import '../../puzzle/domain/puzzle_board.dart';
 import '../../puzzle/domain/puzzle_engine.dart';
 import '../../puzzle/domain/tile_id_gen.dart';
@@ -25,6 +26,7 @@ class BattleState {
     required this.heroHp,
     required this.enemyHp,
     required this.movesLeft,
+    required this.movesPerTurn,
     required this.ap,
     required this.resources,
     required this.shield,
@@ -32,6 +34,7 @@ class BattleState {
     this.nodeId,
     this.nodeName,
     this.coinReward = 0,
+    this.secondWindArmed = false,
     this.selectedCell,
     this.clearingCells = const {},
     this.spawningIds = const {},
@@ -46,6 +49,9 @@ class BattleState {
   final int heroHp;
   final int enemyHp;
   final int movesLeft;
+
+  /// Turn move budget after prep / level / boss modifiers.
+  final int movesPerTurn;
   final int ap;
   final Map<String, int> resources;
   final int shield;
@@ -53,6 +59,9 @@ class BattleState {
   final String? nodeId;
   final String? nodeName;
   final int coinReward;
+
+  /// Equipped Second Wind for this battle (once-per-day gate is profile-side).
+  final bool secondWindArmed;
   final (int, int)? selectedCell;
 
   /// Cells currently playing destroy animation.
@@ -77,11 +86,23 @@ class BattleState {
     String? nodeId,
     String? nodeName,
     int coinReward = 0,
+    int bonusMoves = 0,
+    int bonusShield = 0,
+    bool secondWindArmed = false,
     PuzzleBoard? board,
     TileIdGen? ids,
     Random? random,
+    List<String> prepLogNotes = const [],
   }) {
     final idGen = ids ?? TileIdGen();
+    final effectiveMoves = PrepBalance.movesThisTurn(
+      heroMoves: hero.movesPerTurn,
+      prepBonus: bonusMoves,
+    );
+    final notes = [
+      'Battle started. Match tiles to fuel your skills.',
+      ...prepLogNotes,
+    ];
     return BattleState(
       hero: hero,
       enemy: enemy,
@@ -92,7 +113,8 @@ class BattleState {
           PuzzleBoard.squareNoMatches(random: random ?? Random(), ids: idGen),
       heroHp: hero.maxHp,
       enemyHp: enemy.maxHp,
-      movesLeft: hero.movesPerTurn,
+      movesLeft: effectiveMoves,
+      movesPerTurn: effectiveMoves,
       ap: 0,
       resources: const {
         'attack': 0,
@@ -101,9 +123,10 @@ class BattleState {
         'shield': 0,
         'ultimate': 0,
       },
-      shield: 0,
+      shield: bonusShield,
+      secondWindArmed: secondWindArmed,
       phase: BattlePhase.playerTurn,
-      log: const ['Battle started. Match tiles to fuel your skills.'],
+      log: notes,
     );
   }
 
@@ -112,10 +135,12 @@ class BattleState {
     int? heroHp,
     int? enemyHp,
     int? movesLeft,
+    int? movesPerTurn,
     int? ap,
     Map<String, int>? resources,
     int? shield,
     BattlePhase? phase,
+    bool? secondWindArmed,
     (int, int)? selectedCell,
     bool clearSelected = false,
     Set<(int, int)>? clearingCells,
@@ -135,9 +160,11 @@ class BattleState {
       heroHp: heroHp ?? this.heroHp,
       enemyHp: enemyHp ?? this.enemyHp,
       movesLeft: movesLeft ?? this.movesLeft,
+      movesPerTurn: movesPerTurn ?? this.movesPerTurn,
       ap: ap ?? this.ap,
       resources: resources ?? this.resources,
       shield: shield ?? this.shield,
+      secondWindArmed: secondWindArmed ?? this.secondWindArmed,
       phase: phase ?? this.phase,
       selectedCell: clearSelected ? null : (selectedCell ?? this.selectedCell),
       clearingCells: clearingCells ?? this.clearingCells,
@@ -344,6 +371,26 @@ class BattleController {
     ];
 
     if (heroHp <= 0) {
+      if (state.secondWindArmed) {
+        final reviveHp =
+            (state.hero.maxHp * PrepBalance.secondWindHpFraction).round();
+        final hp = reviveHp < 1 ? 1 : reviveHp;
+        state = state.copyWith(
+          heroHp: hp,
+          shield: shield,
+          secondWindArmed: false,
+          movesLeft: state.movesPerTurn,
+          phase: BattlePhase.playerTurn,
+          combatFx: CombatFx.heroCast,
+          lastEnemySkillName: skill.name,
+          log: [
+            ...logs,
+            'Second Wind! Revived to $hp HP.',
+            'Your turn — ${state.movesPerTurn} moves',
+          ],
+        );
+        return;
+      }
       state = state.copyWith(
         heroHp: 0,
         shield: shield,
@@ -358,11 +405,11 @@ class BattleController {
     state = state.copyWith(
       heroHp: heroHp,
       shield: shield,
-      movesLeft: state.hero.movesPerTurn,
+      movesLeft: state.movesPerTurn,
       phase: BattlePhase.playerTurn,
       combatFx: CombatFx.heroHit,
       lastEnemySkillName: skill.name,
-      log: [...logs, 'Your turn — ${state.hero.movesPerTurn} moves'],
+      log: [...logs, 'Your turn — ${state.movesPerTurn} moves'],
     );
   }
 }

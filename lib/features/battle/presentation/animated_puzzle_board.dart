@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/assets/game_assets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../puzzle/domain/board_cell.dart';
 import '../../puzzle/domain/tile_color.dart';
@@ -21,7 +22,7 @@ class AnimatedPuzzleBoard extends StatelessWidget {
     final board = battle.board;
     return Container(
       decoration: BoxDecoration(
-        color: MythoraColors.deepTeal,
+        color: MythoraColors.deepTeal.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: MythoraColors.mist),
       ),
@@ -158,6 +159,8 @@ class _BoardTileState extends State<_BoardTile> {
 
   @override
   Widget build(BuildContext context) {
+    final showCreatePop = widget.spawning && widget.special != TileSpecial.none;
+
     return AnimatedPositioned(
       duration: Duration(
         milliseconds: widget.clearing
@@ -171,72 +174,79 @@ class _BoardTileState extends State<_BoardTile> {
       height: widget.cellH,
       child: GestureDetector(
         onTap: widget.interactive ? widget.onTap : null,
-        child: AnimatedScale(
-          scale: widget.clearing ? 0.15 : 1,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInBack,
-          child: AnimatedOpacity(
-            opacity: widget.clearing ? 0 : 1,
-            duration: const Duration(milliseconds: 200),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 120),
-              decoration: BoxDecoration(
-                color: MythoraColors.ink.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(8),
-                border: widget.selected
-                    ? Border.all(color: MythoraColors.parchment, width: 2)
-                    : Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                boxShadow: widget.clearing
-                    ? [
-                        BoxShadow(
-                          color: _accentColor(widget.color)
-                              .withValues(alpha: 0.75),
-                          blurRadius: 14,
-                          spreadRadius: 2,
-                        ),
-                      ]
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.25),
-                          blurRadius: 3,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-              ),
-              clipBehavior: Clip.none,
-              child: Stack(
-                fit: StackFit.expand,
-                clipBehavior: Clip.none,
-                children: [
-                  Transform.scale(
-                    scale: 1.22,
-                    child: _TileArt(
-                      color: widget.color,
-                      special: widget.special,
-                    ),
+        child: Stack(
+          fit: StackFit.expand,
+          clipBehavior: Clip.none,
+          children: [
+            AnimatedScale(
+              scale: widget.clearing ? 0.15 : 1,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInBack,
+              child: AnimatedOpacity(
+                opacity: widget.clearing ? 0 : 1,
+                duration: const Duration(milliseconds: 200),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 120),
+                  decoration: BoxDecoration(
+                    color: MythoraColors.ink.withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(8),
+                    border: widget.selected
+                        ? Border.all(color: MythoraColors.parchment, width: 2)
+                        : Border.all(
+                            color: Colors.white.withValues(alpha: 0.08),
+                          ),
+                    boxShadow: widget.clearing
+                        ? [
+                            BoxShadow(
+                              color: _accentColor(widget.color)
+                                  .withValues(alpha: 0.75),
+                              blurRadius: 14,
+                              spreadRadius: 2,
+                            ),
+                          ]
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.25),
+                              blurRadius: 3,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                   ),
-                  if (widget.special != TileSpecial.none)
-                    Center(
-                      child: Icon(
-                        switch (widget.special) {
-                          TileSpecial.rocketVertical => Icons.south,
-                          TileSpecial.rocketHorizontal => Icons.east,
-                          TileSpecial.bomb => Icons.brightness_high,
-                          TileSpecial.fireball => Icons.whatshot,
-                          TileSpecial.seeker => Icons.gps_fixed,
-                          TileSpecial.none => Icons.circle,
-                        },
-                        color: MythoraColors.parchment,
-                        size: widget.cellW * 0.42,
-                        shadows: const [
-                          Shadow(blurRadius: 4, color: Colors.black87),
-                        ],
+                  clipBehavior: Clip.none,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    clipBehavior: Clip.none,
+                    children: [
+                      Transform.scale(
+                        scale: widget.special == TileSpecial.none ? 1.22 : 1.08,
+                        child: _TileArt(
+                          color: widget.color,
+                          special: widget.special,
+                        ),
                       ),
-                    ),
-                ],
+                      if (showCreatePop)
+                        IgnorePointer(
+                          child: Image.asset(
+                            GameAssets.fxSpecialCreate,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) =>
+                                const SizedBox.shrink(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+            if (widget.clearing)
+              IgnorePointer(
+                child: Image.asset(
+                  GameAssets.fxMatchClear,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -252,7 +262,7 @@ class _BoardTileState extends State<_BoardTile> {
       };
 }
 
-/// Puzzle gem art from AB1 tile PNGs; falls back to tint if asset missing.
+/// Puzzle gem or power-up art; falls back to tint if asset missing.
 class _TileArt extends StatelessWidget {
   const _TileArt({
     required this.color,
@@ -262,41 +272,43 @@ class _TileArt extends StatelessWidget {
   final TileColor? color;
   final TileSpecial special;
 
-  static String? assetFor(TileColor? color) => switch (color) {
-        TileColor.red => 'assets/images/tiles/tile_red.png',
-        TileColor.blue => 'assets/images/tiles/tile_blue.png',
-        TileColor.green => 'assets/images/tiles/tile_green.png',
-        TileColor.yellow => 'assets/images/tiles/tile_yellow.png',
-        TileColor.purple => 'assets/images/tiles/tile_purple.png',
-        null => null,
-      };
-
   @override
   Widget build(BuildContext context) {
-    final path = assetFor(color);
-    if (path == null) {
+    final powerupPath = GameAssets.powerup(special);
+    if (powerupPath != null) {
+      return Image.asset(
+        powerupPath,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => _gemFallback(),
+      );
+    }
+
+    if (color == null) {
       return DecoratedBox(
         decoration: BoxDecoration(
-          color: special == TileSpecial.none
-              ? MythoraColors.ink
-              : MythoraColors.mist,
+          color: MythoraColors.ink,
           borderRadius: BorderRadius.circular(6),
         ),
       );
     }
+
     return Image.asset(
-      path,
+      GameAssets.tile(color!),
       fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => ColoredBox(
-        color: switch (color) {
-          TileColor.red => MythoraColors.tileRed,
-          TileColor.blue => MythoraColors.tileBlue,
-          TileColor.green => MythoraColors.tileGreen,
-          TileColor.yellow => MythoraColors.tileYellow,
-          TileColor.purple => MythoraColors.tilePurple,
-          null => MythoraColors.ink,
-        },
-      ),
+      errorBuilder: (_, __, ___) => _gemFallback(),
+    );
+  }
+
+  Widget _gemFallback() {
+    return ColoredBox(
+      color: switch (color) {
+        TileColor.red => MythoraColors.tileRed,
+        TileColor.blue => MythoraColors.tileBlue,
+        TileColor.green => MythoraColors.tileGreen,
+        TileColor.yellow => MythoraColors.tileYellow,
+        TileColor.purple => MythoraColors.tilePurple,
+        null => MythoraColors.ink,
+      },
     );
   }
 }

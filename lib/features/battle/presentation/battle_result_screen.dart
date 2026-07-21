@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../campaign/data/campaign_repository.dart';
+import '../../prep/presentation/prep_picker_sheet.dart';
 import '../../profile/providers/mock_profile_provider.dart';
 
 class BattleResultArgs {
@@ -41,11 +42,18 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
   }
 
   Future<void> _applyReward() async {
-    if (_applied || !widget.args.won) return;
+    if (_applied) return;
     _applied = true;
+    if (!widget.args.won) {
+      await ref.read(profileProvider.notifier).applyDefeat();
+      return;
+    }
+    final chapter = ref.read(campaignChapterProvider).valueOrNull;
+    final node = chapter?.nodeById(widget.args.nodeId);
     await ref.read(profileProvider.notifier).applyVictory(
           nodeId: widget.args.nodeId,
           coinReward: widget.args.coinReward,
+          isBoss: node?.isBoss ?? false,
         );
   }
 
@@ -111,6 +119,16 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
                         'Purse: ${profile.coins} coins',
                         style: textTheme.bodyMedium,
                       ),
+                      if (chapter?.nodeById(args.nodeId).isBoss != true) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          '+1 Vanguard Tonic (prep stash)',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: MythoraColors.softGold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -118,13 +136,13 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
               const Spacer(),
               if (args.won && nextNodeId != null)
                 FilledButton(
-                  onPressed: () => context.go('/battle/$nextNodeId'),
+                  onPressed: () => _goBattle(nextNodeId!),
                   child: const Text('Next battle'),
                 ),
               if (args.won && nextNodeId != null) const SizedBox(height: 10),
               if (!args.won)
                 FilledButton(
-                  onPressed: () => context.go('/battle/${args.nodeId}'),
+                  onPressed: () => _goBattle(args.nodeId),
                   child: const Text('Retry'),
                 ),
               if (!args.won) const SizedBox(height: 10),
@@ -147,5 +165,19 @@ class _BattleResultScreenState extends ConsumerState<BattleResultScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _goBattle(String nodeId) async {
+    final chapter = ref.read(campaignChapterProvider).valueOrNull;
+    final node = chapter?.nodeById(nodeId);
+    if (node != null && node.isBoss) {
+      final ok = await showPrepPickerSheet(
+        context,
+        bossName: node.name,
+      );
+      if (!ok || !mounted) return;
+    }
+    if (!mounted) return;
+    context.go('/battle/$nodeId');
   }
 }

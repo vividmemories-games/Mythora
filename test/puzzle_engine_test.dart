@@ -81,23 +81,27 @@ void main() {
   test('H4 creates vertical rocket at swap destination', () {
     final ids = TileIdGen();
     // After swapping (1,3)→(0,3): row0 becomes R R R R G
-    final board = _board(5, 3, [
-      TileColor.red,
-      TileColor.red,
-      TileColor.red,
-      TileColor.blue,
-      TileColor.green,
-      TileColor.yellow,
-      TileColor.purple,
-      TileColor.blue,
-      TileColor.red,
-      TileColor.yellow,
-      TileColor.purple,
-      TileColor.blue,
-      TileColor.green,
-      TileColor.yellow,
-      TileColor.purple,
-    ], ids: ids);
+    final board = _board(
+        5,
+        3,
+        [
+          TileColor.red,
+          TileColor.red,
+          TileColor.red,
+          TileColor.blue,
+          TileColor.green,
+          TileColor.yellow,
+          TileColor.purple,
+          TileColor.blue,
+          TileColor.red,
+          TileColor.yellow,
+          TileColor.purple,
+          TileColor.blue,
+          TileColor.green,
+          TileColor.yellow,
+          TileColor.purple,
+        ],
+        ids: ids);
 
     final cascade = PuzzleEngine.trySwap(
       board,
@@ -114,11 +118,21 @@ void main() {
 
   test('2x2 square creates bomb', () {
     final ids = TileIdGen();
-    final board = _board(3, 3, [
-      TileColor.red, TileColor.red, TileColor.blue,
-      TileColor.red, TileColor.red, TileColor.green,
-      TileColor.yellow, TileColor.purple, TileColor.blue,
-    ], ids: ids);
+    final board = _board(
+        3,
+        3,
+        [
+          TileColor.red,
+          TileColor.red,
+          TileColor.blue,
+          TileColor.red,
+          TileColor.red,
+          TileColor.green,
+          TileColor.yellow,
+          TileColor.purple,
+          TileColor.blue,
+        ],
+        ids: ids);
     final plan = PuzzleEngine.planWave(board, random: Random(0));
     expect(plan.creations.values, contains(TileSpecial.bomb));
     expect(plan.match.bombsCreated, 1);
@@ -126,11 +140,27 @@ void main() {
 
   test('H5 creates fireball', () {
     final ids = TileIdGen();
-    final board = _board(5, 3, [
-      TileColor.red, TileColor.red, TileColor.red, TileColor.red, TileColor.red,
-      TileColor.blue, TileColor.green, TileColor.yellow, TileColor.purple, TileColor.blue,
-      TileColor.green, TileColor.yellow, TileColor.purple, TileColor.blue, TileColor.green,
-    ], ids: ids);
+    final board = _board(
+        5,
+        3,
+        [
+          TileColor.red,
+          TileColor.red,
+          TileColor.red,
+          TileColor.red,
+          TileColor.red,
+          TileColor.blue,
+          TileColor.green,
+          TileColor.yellow,
+          TileColor.purple,
+          TileColor.blue,
+          TileColor.green,
+          TileColor.yellow,
+          TileColor.purple,
+          TileColor.blue,
+          TileColor.green,
+        ],
+        ids: ids);
     final plan = PuzzleEngine.planWave(
       board,
       swapDestination: (0, 2),
@@ -142,12 +172,28 @@ void main() {
   test('L pentomino creates seeker', () {
     final ids = TileIdGen();
     // L: column of 4 red + one to the right at bottom
-    final board = _board(4, 4, [
-      TileColor.red, TileColor.blue, TileColor.green, TileColor.yellow,
-      TileColor.red, TileColor.yellow, TileColor.purple, TileColor.blue,
-      TileColor.red, TileColor.green, TileColor.blue, TileColor.purple,
-      TileColor.red, TileColor.red, TileColor.yellow, TileColor.green,
-    ], ids: ids);
+    final board = _board(
+        4,
+        4,
+        [
+          TileColor.red,
+          TileColor.blue,
+          TileColor.green,
+          TileColor.yellow,
+          TileColor.red,
+          TileColor.yellow,
+          TileColor.purple,
+          TileColor.blue,
+          TileColor.red,
+          TileColor.green,
+          TileColor.blue,
+          TileColor.purple,
+          TileColor.red,
+          TileColor.red,
+          TileColor.yellow,
+          TileColor.green,
+        ],
+        ids: ids);
     final shapes = MatchShapes.detectAll(board);
     expect(
       shapes.any((s) => s.creates == TileSpecial.seeker),
@@ -158,11 +204,21 @@ void main() {
 
   test('plus shape creates bomb', () {
     final ids = TileIdGen();
-    final board = _board(3, 3, [
-      TileColor.blue, TileColor.red, TileColor.green,
-      TileColor.red, TileColor.red, TileColor.red,
-      TileColor.yellow, TileColor.red, TileColor.purple,
-    ], ids: ids);
+    final board = _board(
+        3,
+        3,
+        [
+          TileColor.blue,
+          TileColor.red,
+          TileColor.green,
+          TileColor.red,
+          TileColor.red,
+          TileColor.red,
+          TileColor.yellow,
+          TileColor.red,
+          TileColor.purple,
+        ],
+        ids: ids);
     final shapes = MatchShapes.detectAll(board);
     expect(shapes.any((s) => s.creates == TileSpecial.bomb), isTrue);
   });

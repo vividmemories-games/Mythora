@@ -31,3 +31,9 @@ flutter:
     - assets/images/icons/
     - assets/images/ui/
     - assets/images/vfx/
+    - assets/images/prep/
+    - assets/images/backgrounds/
+    - assets/images/backgrounds/battle/
+    - assets/images/powerups/
+    - assets/images/maps/
+    - assets/enemies/bosses/

@@ -5,6 +5,7 @@ class CampaignNode {
     required this.enemyId,
     required this.coinReward,
     required this.order,
+    this.kind = 'normal',
   });
 
   final String id;
@@ -13,6 +14,12 @@ class CampaignNode {
   final int coinReward;
   final int order;
 
+  /// `normal` | `boss_sighting` (schema expands in M4+).
+  final String kind;
+
+  bool get isBoss =>
+      kind == 'boss_sighting' || kind == 'boss' || enemyId == 'warchief';
+
   factory CampaignNode.fromJson(Map<String, dynamic> json) {
     return CampaignNode(
       id: json['id'] as String,
@@ -20,6 +27,7 @@ class CampaignNode {
       enemyId: json['enemyId'] as String,
       coinReward: json['coinReward'] as int,
       order: json['order'] as int,
+      kind: json['kind'] as String? ?? 'normal',
     );
   }
 }

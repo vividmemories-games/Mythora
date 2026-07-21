@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../campaign/data/campaign_repository.dart';
 import '../../heroes/domain/hero_def.dart';
+import '../../prep/domain/prep_item.dart';
 import '../../profile/providers/mock_profile_provider.dart';
 import '../../puzzle/domain/puzzle_engine.dart';
 import '../domain/battle_state.dart';
@@ -9,16 +10,32 @@ import '../domain/enemy_def.dart';
 
 final battleProvider = StateNotifierProvider.autoDispose
     .family<BattleNotifier, BattleState, String>((ref, nodeId) {
-  final hero = ref.watch(profileProvider).selectedHero;
+  // Watch only hero id so prep inventory updates do not reset the battle.
+  final heroId = ref.watch(profileProvider.select((p) => p.selectedHeroId));
+  final hero = HeroCatalog.byId(heroId);
   final chapter = ref.watch(campaignChapterProvider).valueOrNull;
   final node = chapter?.nodeById(nodeId);
   final enemy = EnemyCatalog.byId(node?.enemyId ?? 'goblin');
+  final isBoss = node?.isBoss ?? enemy.id == 'warchief';
+
+  // Inventory already consumed by prep picker; apply modifiers then clear.
+  final equipped = isBoss
+      ? List<PrepItemId>.from(ref.read(pendingBossPrepProvider))
+      : const <PrepItemId>[];
+  if (equipped.isNotEmpty) {
+    ref.read(pendingBossPrepProvider.notifier).state = const [];
+  }
+
   return BattleNotifier(
     hero: hero,
     enemy: enemy,
     nodeId: nodeId,
     nodeName: node?.name,
     coinReward: node?.coinReward ?? 0,
+    equippedPrep: equipped,
+    onSecondWindUsed: () {
+      ref.read(profileProvider.notifier).markSecondWindUsed();
+    },
   );
 });
 
@@ -29,13 +46,18 @@ class BattleNotifier extends StateNotifier<BattleState> {
     String? nodeId,
     String? nodeName,
     int coinReward = 0,
-  }) : super(
-          BattleState.initial(
+    List<PrepItemId> equippedPrep = const [],
+    void Function()? onSecondWindUsed,
+  })  : _onSecondWindUsed = onSecondWindUsed,
+        _equippedPrep = List.unmodifiable(equippedPrep),
+        super(
+          _initialState(
             hero: hero ?? HeroCatalog.mage,
             enemy: enemy ?? EnemyCatalog.goblin,
             nodeId: nodeId,
             nodeName: nodeName,
             coinReward: coinReward,
+            equippedPrep: equippedPrep,
           ),
         ) {
     _controller = BattleController(state);
@@ -43,6 +65,46 @@ class BattleNotifier extends StateNotifier<BattleState> {
 
   late BattleController _controller;
   int _actionGen = 0;
+  final List<PrepItemId> _equippedPrep;
+  final void Function()? _onSecondWindUsed;
+
+  static BattleState _initialState({
+    required HeroDef hero,
+    required EnemyDef enemy,
+    String? nodeId,
+    String? nodeName,
+    required int coinReward,
+    required List<PrepItemId> equippedPrep,
+  }) {
+    var bonusMoves = 0;
+    var bonusShield = 0;
+    var secondWind = false;
+    final notes = <String>[];
+    for (final id in equippedPrep) {
+      switch (id) {
+        case PrepItemId.vanguardTonic:
+          bonusMoves += PrepBalance.vanguardBonusMoves;
+          notes.add('Vanguard Tonic: +${PrepBalance.vanguardBonusMoves} Move');
+        case PrepItemId.aegisFlask:
+          bonusShield += PrepBalance.aegisShield;
+          notes.add('Aegis Flask: +${PrepBalance.aegisShield} shield');
+        case PrepItemId.secondWind:
+          secondWind = true;
+          notes.add('Second Wind armed');
+      }
+    }
+    return BattleState.initial(
+      hero: hero,
+      enemy: enemy,
+      nodeId: nodeId,
+      nodeName: nodeName,
+      coinReward: coinReward,
+      bonusMoves: bonusMoves,
+      bonusShield: bonusShield,
+      secondWindArmed: secondWind,
+      prepLogNotes: notes,
+    );
+  }
 
   void tapCell(int row, int col) {
     if (state.inputLocked || state.movesLeft <= 0) return;
@@ -52,7 +114,6 @@ class BattleNotifier extends StateNotifier<BattleState> {
     final cell = state.board.at(row, col);
     final selected = state.selectedCell;
 
-    // Tap a power-up with nothing selected → activate in place.
     if (selected == null && cell.hasSpecial) {
       _runActivate((row, col));
       return;
@@ -64,7 +125,6 @@ class BattleNotifier extends StateNotifier<BattleState> {
     }
 
     if (selected == (row, col)) {
-      // Second tap on the same power-up also activates.
       if (cell.hasSpecial) {
         _runActivate((row, col));
       } else {
@@ -182,10 +242,15 @@ class BattleNotifier extends StateNotifier<BattleState> {
     await Future<void>.delayed(BattleController.enemyTelegraph);
     if (!mounted || gen != _actionGen) return;
 
+    final armedBefore = state.secondWindArmed;
     _controller.state = state;
     final skill = _controller.pickEnemySkill();
     _controller.applyEnemySkill(skill);
     state = _controller.state;
+
+    if (armedBefore && !state.secondWindArmed && state.heroHp > 0) {
+      _onSecondWindUsed?.call();
+    }
 
     await Future<void>.delayed(BattleController.combatFxDuration);
     if (!mounted || gen != _actionGen) return;
@@ -215,13 +280,15 @@ class BattleNotifier extends StateNotifier<BattleState> {
 
   void restart() {
     _actionGen++;
+    // Restart does not re-consume prep; keep same battle modifiers.
     _controller = BattleController(
-      BattleState.initial(
+      _initialState(
         hero: state.hero,
         enemy: state.enemy,
         nodeId: state.nodeId,
         nodeName: state.nodeName,
         coinReward: state.coinReward,
+        equippedPrep: _equippedPrep,
       ),
     );
     state = _controller.state;

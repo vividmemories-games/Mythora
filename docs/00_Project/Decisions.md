@@ -127,3 +127,76 @@ Authority: product/engineering choices that override or clarify [PHASES](../PHAS
 **Impact:** Rewrite [AB1 Production Standards](../06_Asset_Bible/AB1_Production_Standards.md) + [Leonardo Prompt Pack](../06_Asset_Bible/AB1_Leonardo_Prompt_Pack.md); style seed `assets/images/style_board/style_seed_battle_mage.png`; old bust seed deprecated.
 
 **Status:** Accepted
+
+---
+
+## 2026-07-20 — Campaign content architecture (200 levels)
+
+**Decision:** Ship a **200-level** linear campaign stubbed in JSON, structured as **10 chapters × 20 levels**.
+
+| Item | Lock |
+|------|------|
+| Map UI | Vertical Candy Crush–style path |
+| Chapter boss sightings | Levels **5 / 10 / 15 / 20** — same foe, escalating forms; flees until **20** (final death) |
+| Level identity | Board rules **and** enemy kits equally |
+| Hero unlocks | **4** unlocks across the arc (~every 50 levels); starter Mage available from start |
+| Meta prep | Light inventory before boss fights — **Vanguard Tonic**, **Aegis Flask**, **Second Wind** only (v1) |
+| Core combat | Unchanged — match → resources/AP → skills; prep does **not** deal boss damage from the puzzle |
+| Weekly | Mon–Fri puzzle objectives; weekend extreme bosses; fail spends **life/energy** |
+| Home | Hub (not the map); primary CTA **Enter Campaign**; show **lives** from day one |
+
+**Chapter themes (locked names):**
+
+1. Twilight Road  
+2. Mistfen Marshes  
+3. Howling Ridge  
+4. Ashen Quarries  
+5. Candlecrypt  
+6. Mirror Lake  
+7. Thornmarket  
+8. Skybridge Siege  
+9. Eclipse Forge  
+10. Mythspire Gate  
+
+**Reason:** Solo-dev scalable content — reuse enemy art via forms/variants; narrative boss returns; systems over unique-per-level art.
+
+**Impact:** [Content Architecture](../01_Game_Design/Content_Architecture.md), [Master Prompts](../06_Asset_Bible/Master_Prompts.md), future campaign JSON schema, home/weekly/meta-prep features.
+
+**Status:** Accepted
+
+---
+
+## 2026-07-20 — Board complexity, moves clamp, win condition, enrage
+
+**Decision:**
+
+### Board complexity
+- Boards are **data-driven templates + modifiers** (masks, layered obstacles, movers) — not unique art per level.
+- **Masked / blocked cells** and layered obstacles roll out from mid-campaign (Ch2+ as content needs).
+- **Moving parts** (row/col shove, sliding segments) start in **Chapter 3 — Howling Ridge**, not before.
+
+### Moves budget
+```text
+movesThisTurn = hero.movesPerTurn
+              + prep (e.g. Vanguard Tonic +1)
+              + level modifiers
+              − boss/level debuffs
+```
+- Default **minimum clamp = 2**.
+- **Nightmare bosses** may clamp as low as **1**.
+- Moves still refresh each player turn and do not carry over ([GAMEPLAY](../GAMEPLAY.md)).
+
+### Win / lose (campaign)
+- Campaign default: fight until **hero HP ≤ 0** (defeat) or **enemy HP ≤ 0** / boss **flee or death** (victory).
+- **No** global “N chances then lose” for campaign.
+- Weekly / special nodes may use survive-N-turns or tile objectives.
+
+### Boss enrage
+- Optional level flag: after **8 player turns**, boss **enrages** (increased damage / tougher skill weights) — not an instant lose.
+- Exact multipliers → Balancing Bible.
+
+**Reason:** Preserve RPG HP fantasy; use moves and board geometry as tactical pressure; introduce movers only when Ch1–2 basics are solid.
+
+**Impact:** [Content Architecture](../01_Game_Design/Content_Architecture.md), [GAMEPLAY](../GAMEPLAY.md), future level JSON (`maskId`, `moverId`, `enrageAfterTurns`, `minMoves`).
+
+**Status:** Accepted

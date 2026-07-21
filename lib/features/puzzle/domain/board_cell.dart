@@ -3,14 +3,19 @@ import 'tile_color.dart';
 /// Special tiles from shape matches / merges.
 enum TileSpecial {
   none,
+
   /// Clears its column when activated. Created by horizontal line of 4.
   rocketVertical,
+
   /// Clears its row when activated. Created by vertical line of 4.
   rocketHorizontal,
+
   /// Clears a 3×3 area when activated.
   bomb,
+
   /// Clears all tiles of a color (tap = random, swap = that tile's color).
   fireball,
+
   /// Clears 8 random playable tiles (including self).
   seeker,
 }
@@ -26,7 +31,8 @@ extension TileSpecialPriority on TileSpecial {
       };
 
   bool get isRocket =>
-      this == TileSpecial.rocketVertical || this == TileSpecial.rocketHorizontal;
+      this == TileSpecial.rocketVertical ||
+      this == TileSpecial.rocketHorizontal;
 }
 
 /// A single cell on the puzzle board.

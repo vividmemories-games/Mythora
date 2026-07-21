@@ -31,9 +31,10 @@ Lower docs may **extend** higher ones; they must not redefine them. Record excep
 | Balance / content (Phase 2) | [Balancing Bible](01_Game_Design/Balancing_Bible.md) |
 | Economy / monetization | [Economy](01_Game_Design/Economy.md), [Progression](01_Game_Design/Progression.md) |
 | Heroes / enemies | [Heroes](01_Game_Design/Heroes.md), [Enemies](01_Game_Design/Enemies.md) |
+| Campaign / 200-level plan | [Content Architecture](01_Game_Design/Content_Architecture.md) |
 | Colors / motion | [Theme](02_Design_System/Theme.md), [Animations](02_Design_System/Animations.md) |
 | Write code | [Coding Standards](04_Technical/Coding_Standards.md), [Architecture](04_Technical/Architecture.md) |
-| Produce art | [Asset Bible](06_Asset_Bible/README.md), [AB1 Standards](06_Asset_Bible/AB1_Production_Standards.md), [Leonardo Prompt Pack](06_Asset_Bible/AB1_Leonardo_Prompt_Pack.md) |
+| Produce art | [Asset Bible](06_Asset_Bible/README.md), [AB1 Standards](06_Asset_Bible/AB1_Production_Standards.md), [Leonardo Prompt Pack](06_Asset_Bible/AB1_Leonardo_Prompt_Pack.md), [Master Prompts](06_Asset_Bible/Master_Prompts.md) |
 
 ## Structure
 
@@ -43,13 +44,14 @@ docs/
 ├── GAMEPLAY.md               # combat authority
 ├── PHASES.md                 # phase plan + locked product table
 ├── 00_Project/               # Vision, Decisions
-├── 01_Game_Design/           # balance, economy, heroes, enemies
+├── 01_Game_Design/           # balance, economy, heroes, enemies, content architecture
 ├── 02_Design_System/         # dusk theme + motion
 ├── 04_Technical/             # architecture + coding standards
-└── 06_Asset_Bible/           # AB1 production standards + art philosophy
+└── 06_Asset_Bible/           # AB1 + Master Prompts
     ├── README.md
     ├── AB1_Production_Standards.md
-    └── AB1_Leonardo_Prompt_Pack.md
+    ├── AB1_Leonardo_Prompt_Pack.md
+    └── Master_Prompts.md
 ```
 
 ## Document standards

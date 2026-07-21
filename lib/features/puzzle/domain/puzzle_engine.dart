@@ -406,8 +406,7 @@ abstract final class PuzzleEngine {
       return cells;
     }
 
-    if (pair.contains(TileSpecial.seeker) &&
-        pair.contains(TileSpecial.bomb)) {
+    if (pair.contains(TileSpecial.seeker) && pair.contains(TileSpecial.bomb)) {
       final playable = <(int, int)>[];
       for (var r = 0; r < board.height; r++) {
         for (var c = 0; c < board.width; c++) {
@@ -463,8 +462,7 @@ abstract final class PuzzleEngine {
       board,
       {...clear, ...creations.keys},
       rocketsCreated: creations.values.where((s) => s.isRocket).length,
-      bombsCreated:
-          creations.values.where((s) => s == TileSpecial.bomb).length,
+      bombsCreated: creations.values.where((s) => s == TileSpecial.bomb).length,
       fireballsCreated:
           creations.values.where((s) => s == TileSpecial.fireball).length,
       seekersCreated:

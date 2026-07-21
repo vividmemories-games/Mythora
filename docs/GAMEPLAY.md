@@ -75,6 +75,14 @@ Next Player Turn
 - Every tile swap consumes **1 Move**
 - Moves refresh at the start of every turn
 - Moves **cannot** be carried over
+- Effective moves per turn (locked 2026-07-20):
+
+```text
+movesThisTurn = hero.movesPerTurn + prep + levelModifiers − bossDebuffs
+```
+
+- Default **minimum = 2**; **nightmare bosses** may allow **minimum = 1**
+- Meta prep example: Vanguard Tonic → **+1 Move** for that battle (see [Content Architecture](01_Game_Design/Content_Architecture.md))
 
 Placeholder per-hero moves (Phase 1 stubs):
 
@@ -93,6 +101,15 @@ Placeholder per-hero moves (Phase 1 stubs):
 
 - First levels: **6×6 square**
 - Later: asymmetric / irregular masks, disconnected regions, moving parts (Royal Match–style)
+
+### Board complexity rollout (locked 2026-07-20)
+
+| Mechanic | Start |
+|----------|-------|
+| Masked / blocked cells, layered obstacles | Mid-campaign (Ch2+) via templates |
+| Moving parts (row/col shove, sliding segments) | **Chapter 3 — Howling Ridge** |
+
+Do not unique-author geometry per level — use `maskId` / `obstacleLayout` / `moverId` in level JSON.
 
 ### Tile → resource mapping
 
@@ -211,6 +228,16 @@ Examples:
 - Stone Golem → Immune until armor broken
 - Necromancer → Summons skeletons every 3 turns
 - Vampire Lord → Heals for 40% of damage dealt
+
+### Enrage (locked 2026-07-20)
+
+Optional per-level flag: after **8 player turns**, boss **enrages** (higher damage / tougher skill weights). Not an instant lose. Multipliers → Balancing Bible.
+
+### Campaign win / lose (locked 2026-07-20)
+
+- Default: **HP** — hero ≤ 0 → defeat; enemy ≤ 0 (or boss flee/death at chapter beats) → victory
+- **No** global “N chances then lose” in campaign
+- Weekly / special nodes may use survive-N-turns or clear-N-tiles objectives
 
 ---
 
