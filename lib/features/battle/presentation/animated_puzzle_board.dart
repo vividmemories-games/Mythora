@@ -88,6 +88,7 @@ class _BoardSurface extends StatelessWidget {
                     cellH: cellH,
                     gap: gap,
                     selected: battle.selectedCell == (row, col),
+                    hinted: battle.hintCells.contains((row, col)),
                     clearing: battle.clearingCells.contains((row, col)),
                     spawning:
                         battle.spawningIds.contains(board.at(row, col).id),
@@ -113,6 +114,7 @@ class _BoardTile extends StatefulWidget {
     required this.cellH,
     required this.gap,
     required this.selected,
+    required this.hinted,
     required this.clearing,
     required this.spawning,
     required this.interactive,
@@ -128,6 +130,7 @@ class _BoardTile extends StatefulWidget {
   final double cellH;
   final double gap;
   final bool selected;
+  final bool hinted;
   final bool clearing;
   final bool spawning;
   final bool interactive;
@@ -222,40 +225,59 @@ class _BoardTileState extends State<_BoardTile> {
               child: AnimatedOpacity(
                 opacity: widget.clearing ? 0 : 1,
                 duration: const Duration(milliseconds: 200),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 120),
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: widget.selected
-                        ? Border.all(
-                            color: MythoraColors.parchment,
-                            width: 2,
-                          )
-                        : null,
-                  ),
-                  clipBehavior: Clip.none,
-                  child: Stack(
-                    fit: StackFit.expand,
+                child: _HintPulse(
+                  enabled: widget.hinted && !widget.selected,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 120),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: widget.selected
+                          ? Border.all(
+                              color: MythoraColors.parchment,
+                              width: 2,
+                            )
+                          : widget.hinted
+                              ? Border.all(
+                                  color: MythoraColors.softGold,
+                                  width: 2.5,
+                                )
+                              : null,
+                      boxShadow: widget.hinted && !widget.selected
+                          ? [
+                              BoxShadow(
+                                color: MythoraColors.softGold
+                                    .withValues(alpha: 0.55),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
+                    ),
                     clipBehavior: Clip.none,
-                    children: [
-                      Transform.scale(
-                        scale: widget.special == TileSpecial.none ? 1.08 : 1.02,
-                        child: _TileArt(
-                          color: widget.color,
-                          special: widget.special,
-                        ),
-                      ),
-                      if (showCreatePop)
-                        IgnorePointer(
-                          child: Image.asset(
-                            GameAssets.fxSpecialCreate,
-                            fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) =>
-                                const SizedBox.shrink(),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      clipBehavior: Clip.none,
+                      children: [
+                        Transform.scale(
+                          scale:
+                              widget.special == TileSpecial.none ? 1.08 : 1.02,
+                          child: _TileArt(
+                            color: widget.color,
+                            special: widget.special,
                           ),
                         ),
-                    ],
+                        if (showCreatePop)
+                          IgnorePointer(
+                            child: Image.asset(
+                              GameAssets.fxSpecialCreate,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const SizedBox.shrink(),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -271,6 +293,62 @@ class _BoardTileState extends State<_BoardTile> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Soft scale pulse while a match hint is active.
+class _HintPulse extends StatefulWidget {
+  const _HintPulse({required this.enabled, required this.child});
+
+  final bool enabled;
+  final Widget child;
+
+  @override
+  State<_HintPulse> createState() => _HintPulseState();
+}
+
+class _HintPulseState extends State<_HintPulse>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.enabled) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _HintPulse oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.enabled && !_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    } else if (!widget.enabled && _controller.isAnimating) {
+      _controller
+        ..stop()
+        ..value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.enabled) return widget.child;
+    return ScaleTransition(
+      scale: Tween<double>(begin: 1.0, end: 1.08).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      ),
+      child: widget.child,
     );
   }
 }

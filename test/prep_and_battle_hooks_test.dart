@@ -87,4 +87,17 @@ void main() {
     expect(PrepItemId.aegisFlask.displayName, 'Aegis Flask');
     expect(PrepItemIdX.tryParse('second_wind'), PrepItemId.secondWind);
   });
+
+  test('showHint and clearHint update hintCells', () {
+    final controller = BattleController(
+      BattleState.initial(
+        hero: HeroCatalog.mage,
+        enemy: EnemyCatalog.goblin,
+      ),
+    );
+    controller.showHint({(0, 0), (0, 1)});
+    expect(controller.state.hintCells, {(0, 0), (0, 1)});
+    controller.clearHint();
+    expect(controller.state.hintCells, isEmpty);
+  });
 }

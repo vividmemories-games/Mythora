@@ -63,7 +63,7 @@ Generate in priority order: **P0 → P1 → P2 → P3 → P4**.
 | Characters / bosses     | 1024 × 1024 | Full-body chibi; solid `#123A44` or Remove BG |
 | Icons (power-up / prep) | 768 × 768   | Transparent                                   |
 | Battle backgrounds      | 1024 × 1536 | Soft empty lower third                        |
-| Map strips              | 768 × 2048  | Tall path for pins                            |
+| Map strips              | 1024 × 1536 | One portrait map **per act** (4 acts × chapter) |
 | Home bg                 | 1024 × 1536 | No UI chrome                                  |
 | VFX                     | 768 × 768   | Transparent                                   |
 
@@ -465,21 +465,24 @@ thick clean outline, soft cel shading, glossy toy finish, centered, transparent 
 
 
 
-### `map_ch_twilight_road.png` — **P2**
+### `map_ch_twilight_road_a1.png` … `_a4.png` — **P2**
 
 - [x] Created
 
-- **Path:** `assets/images/maps/map_ch_twilight_road.png`
-- **Size:** 768 × 2048 tall
-- **Notes:** Vertical campaign path
+- **Path:** `assets/images/maps/map_ch_twilight_road_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each (one Leonardo-friendly / generator portrait per act)
+- **Notes:** Ch1 split into 4 acts × 5 nodes; each act darker/denser than the last. Not one mega-strip.
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding dusk dirt path through teal woods upward,
-amber horizon, soft painterly 2D, empty path zones for level markers, Twilight Road, no text, no UI icons, no characters
+Tall portrait mobile campaign map, winding dusk dirt path through teal woods,
+empty path for five level markers, Act N darker and denser than previous,
+painterly fantasy, no text, no UI, no characters
 ```
 
+### `map_ch_twilight_road.png` (legacy single strip) — **deprecated**
 
+- [ ] Removed — replaced by act maps a1–a4
 
 ### `bg_battle_twilight_road.png` — **P2**
 
@@ -1656,7 +1659,7 @@ empty clear lower third for characters, painterly 2D casual fantasy, Mythspire G
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_mistfen_marshes.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Mistfen Marshes
 - **Negative:** environment
 
@@ -1672,7 +1675,7 @@ soft painterly 2D, empty path zones for markers, Mistfen Marshes, no text, no UI
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_howling_ridge.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Howling Ridge
 - **Negative:** environment
 
@@ -1688,7 +1691,7 @@ soft painterly 2D, empty path zones for markers, Howling Ridge, no text, no UI, 
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_ashen_quarries.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Ashen Quarries
 - **Negative:** environment
 
@@ -1704,7 +1707,7 @@ soft painterly 2D, empty path zones for markers, Ashen Quarries, no text, no UI,
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_candlecrypt.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Candlecrypt
 - **Negative:** environment
 
@@ -1720,7 +1723,7 @@ soft painterly 2D, empty path zones for markers, Candlecrypt, no text, no UI, no
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_mirror_lake.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Mirror Lake
 - **Negative:** environment
 
@@ -1736,7 +1739,7 @@ soft painterly 2D, empty path zones for markers, Mirror Lake, no text, no UI, no
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_thornmarket.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Thornmarket
 - **Negative:** environment
 
@@ -1752,7 +1755,7 @@ soft painterly 2D, empty path zones for markers, Thornmarket, no text, no UI, no
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_skybridge_siege.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Skybridge Siege
 - **Negative:** environment
 
@@ -1768,7 +1771,7 @@ soft painterly 2D, empty path zones for markers, Skybridge Siege, no text, no UI
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_eclipse_forge.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Eclipse Forge
 - **Negative:** environment
 
@@ -1784,7 +1787,7 @@ soft painterly 2D, empty path zones for markers, Eclipse Forge, no text, no UI, 
 - [ ] Created
 
 - **Path:** `assets/images/maps/map_ch_mythspire_gate.png`
-- **Size:** 768 × 2048 tall
+- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
 - **Notes:** Mythspire Gate
 - **Negative:** environment
 

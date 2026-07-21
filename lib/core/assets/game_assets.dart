@@ -6,7 +6,23 @@ abstract final class GameAssets {
   static const homeBackground = 'assets/images/backgrounds/bg_home_dusk.png';
   static const battleTwilightRoad =
       'assets/images/backgrounds/battle/bg_battle_twilight_road.png';
-  static const mapTwilightRoad = 'assets/images/maps/map_ch_twilight_road.png';
+
+  static const mapTwilightAct1 =
+      'assets/images/maps/map_ch_twilight_road_a1.png';
+  static const mapTwilightAct2 =
+      'assets/images/maps/map_ch_twilight_road_a2.png';
+  static const mapTwilightAct3 =
+      'assets/images/maps/map_ch_twilight_road_a3.png';
+  static const mapTwilightAct4 =
+      'assets/images/maps/map_ch_twilight_road_a4.png';
+
+  /// Prefer [CampaignAct.mapAsset]; these are the Ch1 defaults.
+  static String mapTwilightAct(int actIndex1Based) => switch (actIndex1Based) {
+        1 => mapTwilightAct1,
+        2 => mapTwilightAct2,
+        3 => mapTwilightAct3,
+        _ => mapTwilightAct4,
+      };
 
   static const fxMatchClear = 'assets/images/vfx/fx_match_clear.png';
   static const fxSpecialCreate = 'assets/images/vfx/fx_special_create.png';

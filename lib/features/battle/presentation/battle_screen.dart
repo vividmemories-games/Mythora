@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/assets/game_assets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../heroes/domain/hero_def.dart';
+import '../../profile/providers/mock_profile_provider.dart';
+import '../../puzzle/domain/puzzle_engine.dart';
 import '../domain/battle_state.dart';
 import '../providers/battle_provider.dart';
 import 'animated_puzzle_board.dart';
@@ -12,31 +16,101 @@ import 'battle_hud.dart';
 import 'battle_result_screen.dart';
 import 'battle_stage.dart';
 
-class BattleScreen extends ConsumerWidget {
+class BattleScreen extends ConsumerStatefulWidget {
   const BattleScreen({super.key, required this.nodeId});
 
   final String nodeId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final battle = ref.watch(battleProvider(nodeId));
-    final notifier = ref.read(battleProvider(nodeId).notifier);
+  ConsumerState<BattleScreen> createState() => _BattleScreenState();
+}
 
-    ref.listen(battleProvider(nodeId), (prev, next) {
-      if (prev == null) return;
-      if (prev.phase == next.phase) return;
-      if (next.phase != BattlePhase.victory &&
-          next.phase != BattlePhase.defeat) {
+class _BattleScreenState extends ConsumerState<BattleScreen> {
+  static const _hintIdle = Duration(seconds: 5);
+
+  Timer? _hintTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _scheduleHint(ref.read(battleProvider(widget.nodeId)));
+    });
+  }
+
+  @override
+  void dispose() {
+    _hintTimer?.cancel();
+    super.dispose();
+  }
+
+  void _scheduleHint(BattleState battle) {
+    _hintTimer?.cancel();
+    final hintsOn = ref.read(profileProvider).hintsEnabled;
+    final canHint = hintsOn &&
+        battle.phase == BattlePhase.playerTurn &&
+        !battle.inputLocked &&
+        battle.movesLeft > 0 &&
+        battle.hintCells.isEmpty;
+    if (!canHint) return;
+
+    _hintTimer = Timer(_hintIdle, () {
+      if (!mounted) return;
+      final current = ref.read(battleProvider(widget.nodeId));
+      if (!ref.read(profileProvider).hintsEnabled) return;
+      if (current.phase != BattlePhase.playerTurn) return;
+      if (current.inputLocked || current.movesLeft <= 0) return;
+      if (current.hintCells.isNotEmpty) return;
+      final swap = PuzzleEngine.findFirstColorSwap(current.board);
+      if (swap == null) return;
+      ref.read(battleProvider(widget.nodeId).notifier).showHint({
+        swap.$1,
+        swap.$2,
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final battle = ref.watch(battleProvider(widget.nodeId));
+    final notifier = ref.read(battleProvider(widget.nodeId).notifier);
+
+    ref.listen(battleProvider(widget.nodeId), (prev, next) {
+      if (prev != null &&
+          prev.phase != next.phase &&
+          (next.phase == BattlePhase.victory ||
+              next.phase == BattlePhase.defeat)) {
+        final args = BattleResultArgs(
+          won: next.phase == BattlePhase.victory,
+          nodeId: next.nodeId ?? widget.nodeId,
+          nodeName: next.nodeName ?? 'Battle',
+          enemyName: next.enemy.name,
+          coinReward: next.coinReward,
+        );
+        context.pushReplacement('/result', extra: args);
         return;
       }
-      final args = BattleResultArgs(
-        won: next.phase == BattlePhase.victory,
-        nodeId: next.nodeId ?? nodeId,
-        nodeName: next.nodeName ?? 'Battle',
-        enemyName: next.enemy.name,
-        coinReward: next.coinReward,
-      );
-      context.pushReplacement('/result', extra: args);
+
+      final idleChanged = prev == null ||
+          prev.board != next.board ||
+          prev.phase != next.phase ||
+          prev.selectedCell != next.selectedCell ||
+          prev.movesLeft != next.movesLeft ||
+          prev.inputLocked != next.inputLocked ||
+          prev.hintCells != next.hintCells;
+      if (idleChanged) {
+        _scheduleHint(next);
+      }
+    });
+
+    ref.listen(profileProvider.select((p) => p.hintsEnabled), (_, enabled) {
+      if (!enabled) {
+        _hintTimer?.cancel();
+        notifier.clearHint();
+        return;
+      }
+      _scheduleHint(ref.read(battleProvider(widget.nodeId)));
     });
 
     return Scaffold(

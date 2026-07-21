@@ -571,4 +571,86 @@ void main() {
     );
     expect(cascade, isNull);
   });
+
+  test('findFirstColorSwap returns first valid color move', () {
+    // Swap (0,1)↔(1,1) forms a horizontal red match on row 0.
+    final board = _board(3, 3, [
+      TileColor.red, TileColor.green, TileColor.red, //
+      TileColor.green, TileColor.red, TileColor.blue,
+      TileColor.blue, TileColor.yellow, TileColor.green,
+    ]);
+    expect(PuzzleEngine.findMatches(board), isEmpty);
+    final swap = PuzzleEngine.findFirstColorSwap(board);
+    expect(swap, isNotNull);
+    expect(swap!.$1, (0, 1));
+    expect(swap.$2, (1, 1));
+    expect(PuzzleEngine.hasColorMove(board), isTrue);
+  });
+
+  test('findFirstColorSwap ignores power-up cells', () {
+    final ids = TileIdGen();
+    // Same geometry, but (1,1) is a bomb so the color move is unavailable.
+    final cells = [
+      BoardCell.tile(id: ids.next(), color: TileColor.red),
+      BoardCell.tile(id: ids.next(), color: TileColor.green),
+      BoardCell.tile(id: ids.next(), color: TileColor.red),
+      BoardCell.tile(id: ids.next(), color: TileColor.green),
+      BoardCell.powerUp(
+        id: ids.next(),
+        special: TileSpecial.bomb,
+        tint: TileColor.red,
+      ),
+      BoardCell.tile(id: ids.next(), color: TileColor.blue),
+      BoardCell.tile(id: ids.next(), color: TileColor.blue),
+      BoardCell.tile(id: ids.next(), color: TileColor.yellow),
+      BoardCell.tile(id: ids.next(), color: TileColor.green),
+    ];
+    final board = PuzzleBoard(width: 3, height: 3, cells: cells);
+    final swap = PuzzleEngine.findFirstColorSwap(board);
+    if (swap != null) {
+      expect(board.at(swap.$1.$1, swap.$1.$2).isMatchable, isTrue);
+      expect(board.at(swap.$2.$1, swap.$2.$2).isMatchable, isTrue);
+      expect(
+        {swap.$1, swap.$2}.contains((1, 1)),
+        isFalse,
+        reason: 'hint must not involve a power-up cell',
+      );
+    }
+  });
+
+  test('reshuffleKeepingSpecials preserves power-ups and creates a move', () {
+    final ids = TileIdGen();
+    final random = Random(42);
+    var board = PuzzleBoard.squarePlayable(random: random, ids: ids);
+    // Plant two power-ups at fixed cells.
+    final cells = List<BoardCell>.from(board.cells);
+    cells[0] = BoardCell.powerUp(
+      id: 9001,
+      special: TileSpecial.bomb,
+      tint: TileColor.red,
+    );
+    cells[board.width + 2] = BoardCell.powerUp(
+      id: 9002,
+      special: TileSpecial.rocketVertical,
+      tint: TileColor.blue,
+    );
+    board = PuzzleBoard(
+      width: board.width,
+      height: board.height,
+      cells: cells,
+    );
+
+    final next = PuzzleEngine.reshuffleKeepingSpecials(
+      board,
+      random: Random(7),
+      ids: ids,
+    );
+
+    expect(next.at(0, 0).special, TileSpecial.bomb);
+    expect(next.at(0, 0).id, 9001);
+    expect(next.at(1, 2).special, TileSpecial.rocketVertical);
+    expect(next.at(1, 2).id, 9002);
+    expect(PuzzleEngine.findMatches(next), isEmpty);
+    expect(PuzzleEngine.hasColorMove(next, random: Random(7)), isTrue);
+  });
 }

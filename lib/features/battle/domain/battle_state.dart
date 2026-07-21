@@ -40,6 +40,7 @@ class BattleState {
     this.spawningIds = const {},
     this.combatFx = CombatFx.none,
     this.enemyIntent,
+    this.hintCells = const {},
     this.lastEnemySkillName,
     this.log = const [],
   });
@@ -77,6 +78,9 @@ class BattleState {
   /// start of each player turn and executed exactly, so the threat badge
   /// is honest.
   final EnemySkill? enemyIntent;
+
+  /// Idle match-hint cells (color swap). Cleared on input / reshuffle.
+  final Set<(int, int)> hintCells;
   final String? lastEnemySkillName;
   final List<String> log;
 
@@ -116,7 +120,7 @@ class BattleState {
       nodeName: nodeName,
       coinReward: coinReward,
       board: board ??
-          PuzzleBoard.squareNoMatches(random: random ?? Random(), ids: idGen),
+          PuzzleBoard.squarePlayable(random: random ?? Random(), ids: idGen),
       heroHp: hero.maxHp,
       enemyHp: enemy.maxHp,
       movesLeft: effectiveMoves,
@@ -153,6 +157,8 @@ class BattleState {
     Set<int>? spawningIds,
     CombatFx? combatFx,
     EnemySkill? enemyIntent,
+    Set<(int, int)>? hintCells,
+    bool clearHint = false,
     String? lastEnemySkillName,
     bool clearEnemySkill = false,
     List<String>? log,
@@ -178,6 +184,7 @@ class BattleState {
       spawningIds: spawningIds ?? this.spawningIds,
       combatFx: combatFx ?? this.combatFx,
       enemyIntent: enemyIntent ?? this.enemyIntent,
+      hintCells: clearHint ? const {} : (hintCells ?? this.hintCells),
       lastEnemySkillName: clearEnemySkill
           ? null
           : (lastEnemySkillName ?? this.lastEnemySkillName),
@@ -349,6 +356,32 @@ class BattleController {
 
   void clearCombatFx() {
     state = state.copyWith(combatFx: CombatFx.none);
+  }
+
+  void clearHint() {
+    if (state.hintCells.isEmpty) return;
+    state = state.copyWith(clearHint: true);
+  }
+
+  void showHint(Set<(int, int)> cells) {
+    state = state.copyWith(hintCells: cells);
+  }
+
+  /// When no color swaps remain, reshuffle normal gems (keeps power-ups).
+  bool reshuffleIfDead() {
+    if (PuzzleEngine.hasColorMove(state.board, random: _random)) return false;
+    final board = PuzzleEngine.reshuffleKeepingSpecials(
+      state.board,
+      random: _random,
+      ids: ids,
+    );
+    state = state.copyWith(
+      board: board,
+      clearHint: true,
+      clearSelected: true,
+      log: [...state.log, 'No moves — reshuffling…'],
+    );
+    return true;
   }
 
   EnemySkill pickEnemySkill() {

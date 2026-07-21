@@ -1,53 +1,223 @@
 {
   "id": "twilight_road",
   "title": "Twilight Road",
-  "subtitle": "Five skirmishes on the dusk path.",
-  "nodes": [
+  "subtitle": "Four acts on the dusk path.",
+  "acts": [
     {
-      "id": "node_01",
-      "name": "Goblin Path",
-      "enemyId": "goblin",
-      "coinReward": 35,
-      "order": 0,
-      "mapX": 0.46,
-      "mapY": 0.9
+      "id": "ch1_act1",
+      "title": "Act I",
+      "mapAsset": "assets/images/maps/map_ch_twilight_road_a1.png",
+      "nodes": [
+        {
+          "id": "node_01",
+          "name": "Goblin Path",
+          "enemyId": "goblin",
+          "coinReward": 30,
+          "order": 0,
+          "mapX": 0.48,
+          "mapY": 0.88
+        },
+        {
+          "id": "node_02",
+          "name": "Duskwatch",
+          "enemyId": "wolf",
+          "coinReward": 34,
+          "order": 1,
+          "mapX": 0.58,
+          "mapY": 0.72
+        },
+        {
+          "id": "node_03",
+          "name": "Root Hollow",
+          "enemyId": "shaman",
+          "coinReward": 38,
+          "order": 2,
+          "mapX": 0.42,
+          "mapY": 0.56
+        },
+        {
+          "id": "node_04",
+          "name": "Bramble Gate",
+          "enemyId": "brute",
+          "coinReward": 42,
+          "order": 3,
+          "mapX": 0.56,
+          "mapY": 0.38
+        },
+        {
+          "id": "node_05",
+          "name": "Warchief — Form I",
+          "enemyId": "warchief",
+          "coinReward": 70,
+          "order": 4,
+          "kind": "boss_sighting",
+          "bossForm": 1,
+          "mapX": 0.50,
+          "mapY": 0.18
+        }
+      ]
     },
     {
-      "id": "node_02",
-      "name": "Wolf Den",
-      "enemyId": "wolf",
-      "coinReward": 50,
-      "order": 1,
-      "mapX": 0.58,
-      "mapY": 0.72
+      "id": "ch1_act2",
+      "title": "Act II",
+      "mapAsset": "assets/images/maps/map_ch_twilight_road_a2.png",
+      "nodes": [
+        {
+          "id": "node_06",
+          "name": "Wolf Run",
+          "enemyId": "wolf",
+          "coinReward": 46,
+          "order": 5,
+          "mapX": 0.48,
+          "mapY": 0.88
+        },
+        {
+          "id": "node_07",
+          "name": "Shaman Bog",
+          "enemyId": "shaman",
+          "coinReward": 50,
+          "order": 6,
+          "mapX": 0.58,
+          "mapY": 0.72
+        },
+        {
+          "id": "node_08",
+          "name": "Stone Steps",
+          "enemyId": "brute",
+          "coinReward": 54,
+          "order": 7,
+          "mapX": 0.42,
+          "mapY": 0.56
+        },
+        {
+          "id": "node_09",
+          "name": "Scout Ridge",
+          "enemyId": "goblin",
+          "coinReward": 58,
+          "order": 8,
+          "mapX": 0.56,
+          "mapY": 0.38
+        },
+        {
+          "id": "node_10",
+          "name": "Warchief — Form II",
+          "enemyId": "warchief",
+          "coinReward": 95,
+          "order": 9,
+          "kind": "boss_sighting",
+          "bossForm": 2,
+          "mapX": 0.50,
+          "mapY": 0.18
+        }
+      ]
     },
     {
-      "id": "node_03",
-      "name": "Shaman Hollow",
-      "enemyId": "shaman",
-      "coinReward": 70,
-      "order": 2,
-      "mapX": 0.44,
-      "mapY": 0.55
+      "id": "ch1_act3",
+      "title": "Act III",
+      "mapAsset": "assets/images/maps/map_ch_twilight_road_a3.png",
+      "nodes": [
+        {
+          "id": "node_11",
+          "name": "Fern Clearing",
+          "enemyId": "wolf",
+          "coinReward": 62,
+          "order": 10,
+          "mapX": 0.48,
+          "mapY": 0.88
+        },
+        {
+          "id": "node_12",
+          "name": "Mist Bend",
+          "enemyId": "shaman",
+          "coinReward": 66,
+          "order": 11,
+          "mapX": 0.58,
+          "mapY": 0.72
+        },
+        {
+          "id": "node_13",
+          "name": "Iron Thicket",
+          "enemyId": "brute",
+          "coinReward": 70,
+          "order": 12,
+          "mapX": 0.42,
+          "mapY": 0.56
+        },
+        {
+          "id": "node_14",
+          "name": "Ambush Bend",
+          "enemyId": "goblin",
+          "coinReward": 74,
+          "order": 13,
+          "mapX": 0.56,
+          "mapY": 0.38
+        },
+        {
+          "id": "node_15",
+          "name": "Warchief — Form III",
+          "enemyId": "warchief",
+          "coinReward": 120,
+          "order": 14,
+          "kind": "boss_sighting",
+          "bossForm": 3,
+          "mapX": 0.50,
+          "mapY": 0.18
+        }
+      ]
     },
     {
-      "id": "node_04",
-      "name": "Brute Gate",
-      "enemyId": "brute",
-      "coinReward": 90,
-      "order": 3,
-      "mapX": 0.57,
-      "mapY": 0.38
-    },
-    {
-      "id": "node_05",
-      "name": "Warchief",
-      "enemyId": "warchief",
-      "coinReward": 120,
-      "order": 4,
-      "kind": "boss_sighting",
-      "mapX": 0.5,
-      "mapY": 0.17
+      "id": "ch1_act4",
+      "title": "Act IV",
+      "mapAsset": "assets/images/maps/map_ch_twilight_road_a4.png",
+      "nodes": [
+        {
+          "id": "node_16",
+          "name": "Howl Cut",
+          "enemyId": "wolf",
+          "coinReward": 78,
+          "order": 15,
+          "mapX": 0.48,
+          "mapY": 0.88
+        },
+        {
+          "id": "node_17",
+          "name": "Hex Grove",
+          "enemyId": "shaman",
+          "coinReward": 82,
+          "order": 16,
+          "mapX": 0.58,
+          "mapY": 0.72
+        },
+        {
+          "id": "node_18",
+          "name": "Brute Climb",
+          "enemyId": "brute",
+          "coinReward": 86,
+          "order": 17,
+          "mapX": 0.42,
+          "mapY": 0.56
+        },
+        {
+          "id": "node_19",
+          "name": "Final Approach",
+          "enemyId": "goblin",
+          "coinReward": 90,
+          "order": 18,
+          "mapX": 0.56,
+          "mapY": 0.38
+        },
+        {
+          "id": "node_20",
+          "name": "Warchief's End",
+          "enemyId": "warchief",
+          "coinReward": 150,
+          "order": 19,
+          "kind": "boss_sighting",
+          "bossForm": 4,
+          "mapX": 0.50,
+          "mapY": 0.18
+        }
+      ]
     }
   ]
 }

@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../heroes/domain/hero_def.dart';
 import '../../prep/domain/prep_item.dart';
 import '../../profile/providers/mock_profile_provider.dart';
+import 'settings_sheet.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -54,6 +55,15 @@ class HomeScreen extends ConsumerWidget {
                       _ResourceChip(
                         label: '${profile.lives}',
                         icon: Icons.favorite_outline,
+                      ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        tooltip: 'Settings',
+                        onPressed: () => showSettingsSheet(context),
+                        icon: const Icon(
+                          Icons.settings_outlined,
+                          color: MythoraColors.parchment,
+                        ),
                       ),
                     ],
                   ),

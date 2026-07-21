@@ -523,6 +523,106 @@ abstract final class PuzzleEngine {
     return (dr + dc) == 1;
   }
 
+  /// First adjacent **color** swap that creates a match (ignores power-ups).
+  /// Scans top→bottom, left→right; tries right then down neighbor.
+  static ((int, int) a, (int, int) b)? findFirstColorSwap(
+    PuzzleBoard board, {
+    Random? random,
+  }) {
+    final rng = random ?? Random(0);
+    for (var row = 0; row < board.height; row++) {
+      for (var col = 0; col < board.width; col++) {
+        if (!board.at(row, col).isMatchable) continue;
+        final a = (row, col);
+        for (final b in [(row, col + 1), (row + 1, col)]) {
+          if (!board.inBounds(b.$1, b.$2)) continue;
+          if (!board.at(b.$1, b.$2).isMatchable) continue;
+          final swapped = swap(board, a, b);
+          final plan = planWave(
+            swapped,
+            swapDestination: b,
+            swapOrigin: a,
+            random: rng,
+          );
+          if (!plan.isEmpty) return (a, b);
+        }
+      }
+    }
+    return null;
+  }
+
+  static bool hasColorMove(PuzzleBoard board, {Random? random}) =>
+      findFirstColorSwap(board, random: random) != null;
+
+  /// Recolor normal gems in place; power-ups stay. Result has no matches and
+  /// at least one valid color swap when possible.
+  static PuzzleBoard reshuffleKeepingSpecials(
+    PuzzleBoard board, {
+    required Random random,
+    required TileIdGen ids,
+    int maxAttempts = 80,
+  }) {
+    PuzzleBoard? last;
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      final next = _fillMatchableNoMatches(board, random: random, ids: ids);
+      last = next;
+      if (findMatches(next).isEmpty && hasColorMove(next, random: random)) {
+        return next;
+      }
+    }
+    return last ?? board;
+  }
+
+  /// Like [PuzzleBoard.squareNoMatches] but only rewrites matchable cells.
+  static PuzzleBoard _fillMatchableNoMatches(
+    PuzzleBoard board, {
+    required Random random,
+    required TileIdGen ids,
+  }) {
+    const colors = TileColor.values;
+    final next = List<BoardCell>.from(board.cells);
+
+    BoardCell at(int r, int c) => next[r * board.width + c];
+
+    for (var row = 0; row < board.height; row++) {
+      for (var col = 0; col < board.width; col++) {
+        final i = row * board.width + col;
+        final existing = next[i];
+        if (existing.masked || existing.hasSpecial) continue;
+        if (!existing.isPlayable && existing.color == null) continue;
+
+        final forbidden = <TileColor>{};
+        if (col >= 2) {
+          final a = at(row, col - 1).matchColor;
+          final b = at(row, col - 2).matchColor;
+          if (a != null && a == b) forbidden.add(a);
+        }
+        if (row >= 2) {
+          final a = at(row - 1, col).matchColor;
+          final b = at(row - 2, col).matchColor;
+          if (a != null && a == b) forbidden.add(a);
+        }
+        if (row > 0 && col > 0) {
+          final tl = at(row - 1, col - 1).matchColor;
+          final tr = at(row - 1, col).matchColor;
+          final bl = at(row, col - 1).matchColor;
+          if (tl != null && tl == tr && tl == bl) forbidden.add(tl);
+        }
+
+        final options =
+            colors.where((c) => !forbidden.contains(c)).toList(growable: false);
+        final pick = options.isEmpty
+            ? colors[random.nextInt(colors.length)]
+            : options[random.nextInt(options.length)];
+        next[i] = BoardCell.tile(
+          id: existing.id ?? ids.next(),
+          color: pick,
+        );
+      }
+    }
+    return PuzzleBoard(width: board.width, height: board.height, cells: next);
+  }
+
   static PuzzleBoard swap(PuzzleBoard board, (int, int) a, (int, int) b) {
     final cellA = board.at(a.$1, a.$2);
     final cellB = board.at(b.$1, b.$2);

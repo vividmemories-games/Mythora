@@ -74,6 +74,28 @@ class PuzzleBoard {
     return board;
   }
 
+  /// No starting matches and at least one valid color swap.
+  factory PuzzleBoard.squarePlayable({
+    int size = defaultSize,
+    Random? random,
+    TileIdGen? ids,
+    int maxAttempts = 40,
+  }) {
+    final rng = random ?? Random();
+    final idGen = ids ?? TileIdGen();
+    PuzzleBoard? last;
+    for (var i = 0; i < maxAttempts; i++) {
+      final board = PuzzleBoard.squareNoMatches(
+        size: size,
+        random: rng,
+        ids: idGen,
+      );
+      last = board;
+      if (PuzzleEngine.hasColorMove(board, random: rng)) return board;
+    }
+    return last ?? PuzzleBoard.squareNoMatches(size: size, random: rng, ids: idGen);
+  }
+
   /// Legacy random fill (may contain matches). Prefer [squareNoMatches].
   factory PuzzleBoard.squareRandom({
     int size = defaultSize,

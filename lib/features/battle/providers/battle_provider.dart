@@ -113,6 +113,10 @@ class BattleNotifier extends StateNotifier<BattleState> {
     if (!state.board.inBounds(row, col)) return;
     if (!state.board.at(row, col).isPlayable) return;
 
+    _controller.state = state;
+    _controller.clearHint();
+    state = _controller.state;
+
     final cell = state.board.at(row, col);
     final selected = state.selectedCell;
 
@@ -145,6 +149,18 @@ class BattleNotifier extends StateNotifier<BattleState> {
     }
 
     _runSwap(selected, (row, col));
+  }
+
+  void showHint(Set<(int, int)> cells) {
+    _controller.state = state;
+    _controller.showHint(cells);
+    state = _controller.state;
+  }
+
+  void clearHint() {
+    _controller.state = state;
+    _controller.clearHint();
+    state = _controller.state;
   }
 
   Future<void> _runActivate((int, int) pos) async {
@@ -233,7 +249,18 @@ class BattleNotifier extends StateNotifier<BattleState> {
 
     if (state.phase == BattlePhase.enemyTurn) {
       await _runEnemyTurn(gen);
+    } else if (state.phase == BattlePhase.playerTurn) {
+      await _ensurePlayableBoard(gen);
     }
+  }
+
+  Future<void> _ensurePlayableBoard(int gen) async {
+    if (state.phase != BattlePhase.playerTurn) return;
+    _controller.state = state;
+    if (!_controller.reshuffleIfDead()) return;
+    state = _controller.state;
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    if (!mounted || gen != _actionGen) return;
   }
 
   Future<void> _runEnemyTurn(int gen) async {
@@ -259,6 +286,10 @@ class BattleNotifier extends StateNotifier<BattleState> {
     _controller.state = state;
     _controller.clearCombatFx();
     state = _controller.state;
+
+    if (state.phase == BattlePhase.playerTurn) {
+      await _ensurePlayableBoard(gen);
+    }
   }
 
   Future<void> castSkill(SkillDef skill) async {

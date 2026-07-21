@@ -25,6 +25,9 @@ class PlayerProfile {
       PrepItemId.secondWind: 1,
     },
     this.secondWindUsedDay = '',
+    this.hintsEnabled = true,
+    this.soundEnabled = true,
+    this.hapticsEnabled = true,
   });
 
   final String displayName;
@@ -37,6 +40,10 @@ class PlayerProfile {
 
   /// `yyyy-MM-dd` of last Second Wind revive (empty = never).
   final String secondWindUsedDay;
+
+  final bool hintsEnabled;
+  final bool soundEnabled;
+  final bool hapticsEnabled;
 
   HeroDef get selectedHero => HeroCatalog.byId(selectedHeroId);
 
@@ -56,6 +63,9 @@ class PlayerProfile {
     Set<String>? completedNodeIds,
     Map<PrepItemId, int>? prepInventory,
     String? secondWindUsedDay,
+    bool? hintsEnabled,
+    bool? soundEnabled,
+    bool? hapticsEnabled,
   }) {
     return PlayerProfile(
       displayName: displayName ?? this.displayName,
@@ -66,13 +76,16 @@ class PlayerProfile {
       completedNodeIds: completedNodeIds ?? this.completedNodeIds,
       prepInventory: prepInventory ?? this.prepInventory,
       secondWindUsedDay: secondWindUsedDay ?? this.secondWindUsedDay,
+      hintsEnabled: hintsEnabled ?? this.hintsEnabled,
+      soundEnabled: soundEnabled ?? this.soundEnabled,
+      hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
     );
   }
 
   /// Bump when the persisted shape changes; readers stay tolerant of older
   /// payloads. Mirrors the planned Firestore `users` doc (see
   /// docs/04_Technical/Firestore_Schema.md).
-  static const schemaVersion = 3;
+  static const schemaVersion = 4;
 
   Map<String, dynamic> toJson() => {
         'schemaVersion': schemaVersion,
@@ -86,6 +99,9 @@ class PlayerProfile {
           for (final e in prepInventory.entries) e.key.storageKey: e.value,
         },
         'secondWindUsedDay': secondWindUsedDay,
+        'hintsEnabled': hintsEnabled,
+        'soundEnabled': soundEnabled,
+        'hapticsEnabled': hapticsEnabled,
       };
 
   factory PlayerProfile.fromJson(Map<String, dynamic> json) {
@@ -117,6 +133,9 @@ class PlayerProfile {
       completedNodeIds: ids,
       prepInventory: prep,
       secondWindUsedDay: json['secondWindUsedDay'] as String? ?? '',
+      hintsEnabled: json['hintsEnabled'] as bool? ?? true,
+      soundEnabled: json['soundEnabled'] as bool? ?? true,
+      hapticsEnabled: json['hapticsEnabled'] as bool? ?? true,
     );
   }
 
@@ -152,6 +171,21 @@ class ProfileNotifier extends StateNotifier<PlayerProfile> {
 
   void selectHero(String heroId) {
     state = state.copyWith(selectedHeroId: heroId);
+    _persist();
+  }
+
+  void setHintsEnabled(bool value) {
+    state = state.copyWith(hintsEnabled: value);
+    _persist();
+  }
+
+  void setSoundEnabled(bool value) {
+    state = state.copyWith(soundEnabled: value);
+    _persist();
+  }
+
+  void setHapticsEnabled(bool value) {
+    state = state.copyWith(hapticsEnabled: value);
     _persist();
   }
 

@@ -6,6 +6,8 @@ class CampaignNode {
     required this.coinReward,
     required this.order,
     this.kind = 'normal',
+    this.bossForm,
+    this.backgroundId,
     this.mapX,
     this.mapY,
   });
@@ -14,14 +16,20 @@ class CampaignNode {
   final String name;
   final String enemyId;
   final int coinReward;
+
+  /// Chapter-global order (0–19 for a 20-node chapter).
   final int order;
 
-  /// `normal` | `boss_sighting` (schema expands in M4+).
+  /// `normal` | `boss_sighting`
   final String kind;
 
-  /// Pin position on the chapter map, normalized 0–1 (x from left,
-  /// y from top of the map art). Null = no authored position; the map
-  /// screen falls back to evenly spaced slots.
+  /// Returning chapter-boss form 1–4. Null for trash nodes.
+  final int? bossForm;
+
+  /// Optional battle BG override (defaults to chapter BG).
+  final String? backgroundId;
+
+  /// Pin on this act's map art, normalized 0–1.
   final double? mapX;
   final double? mapY;
 
@@ -35,6 +43,10 @@ class CampaignNode {
       return (d < 0 || d > 1) ? null : d;
     }
 
+    final rawForm = json['bossForm'];
+    final form =
+        rawForm is int ? rawForm : (rawForm is num ? rawForm.toInt() : null);
+
     return CampaignNode(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -42,10 +54,50 @@ class CampaignNode {
       coinReward: json['coinReward'] as int,
       order: json['order'] as int,
       kind: json['kind'] as String? ?? 'normal',
+      bossForm: (form != null && form >= 1 && form <= 4) ? form : null,
+      backgroundId: json['backgroundId'] as String?,
       mapX: coord(json['mapX']),
       mapY: coord(json['mapY']),
     );
   }
+}
+
+/// One map segment of a chapter (e.g. Ch1 Act I = nodes 1–5).
+class CampaignAct {
+  const CampaignAct({
+    required this.id,
+    required this.title,
+    required this.mapAsset,
+    required this.nodes,
+    this.index = 0,
+  });
+
+  final String id;
+  final String title;
+
+  /// Asset path for this act's portrait map.
+  final String mapAsset;
+  final List<CampaignNode> nodes;
+
+  /// 0-based act index within the chapter.
+  final int index;
+
+  factory CampaignAct.fromJson(Map<String, dynamic> json, {int index = 0}) {
+    final rawNodes = json['nodes'] as List<dynamic>;
+    final nodes = rawNodes
+        .map((e) => CampaignNode.fromJson(e as Map<String, dynamic>))
+        .toList()
+      ..sort((a, b) => a.order.compareTo(b.order));
+    return CampaignAct(
+      id: json['id'] as String,
+      title: json['title'] as String? ?? 'Act ${index + 1}',
+      mapAsset: json['mapAsset'] as String,
+      nodes: nodes,
+      index: index,
+    );
+  }
+
+  CampaignNode get finale => nodes.last;
 }
 
 class CampaignChapter {
@@ -53,16 +105,36 @@ class CampaignChapter {
     required this.id,
     required this.title,
     required this.subtitle,
-    required this.nodes,
+    required this.acts,
   });
 
   final String id;
   final String title;
   final String subtitle;
-  final List<CampaignNode> nodes;
+  final List<CampaignAct> acts;
+
+  /// Flat node list in unlock order (across all acts).
+  List<CampaignNode> get nodes => [for (final a in acts) ...a.nodes];
 
   factory CampaignChapter.fromJson(Map<String, dynamic> json) {
-    final rawNodes = json['nodes'] as List<dynamic>;
+    // New schema: acts[]. Legacy: flat nodes[] → one synthetic act.
+    if (json['acts'] is List) {
+      final rawActs = json['acts'] as List<dynamic>;
+      final acts = <CampaignAct>[];
+      for (var i = 0; i < rawActs.length; i++) {
+        acts.add(
+          CampaignAct.fromJson(rawActs[i] as Map<String, dynamic>, index: i),
+        );
+      }
+      return CampaignChapter(
+        id: json['id'] as String,
+        title: json['title'] as String,
+        subtitle: json['subtitle'] as String? ?? '',
+        acts: acts,
+      );
+    }
+
+    final rawNodes = json['nodes'] as List<dynamic>? ?? const [];
     final nodes = rawNodes
         .map((e) => CampaignNode.fromJson(e as Map<String, dynamic>))
         .toList()
@@ -71,12 +143,30 @@ class CampaignChapter {
       id: json['id'] as String,
       title: json['title'] as String,
       subtitle: json['subtitle'] as String? ?? '',
-      nodes: nodes,
+      acts: [
+        CampaignAct(
+          id: '${json['id']}_act1',
+          title: 'Act I',
+          mapAsset: json['mapAsset'] as String? ??
+              'assets/images/maps/map_ch_twilight_road_a1.png',
+          nodes: nodes,
+        ),
+      ],
     );
   }
 
   CampaignNode nodeById(String id) =>
       nodes.firstWhere((n) => n.id == id, orElse: () => nodes.first);
+
+  CampaignAct actById(String id) =>
+      acts.firstWhere((a) => a.id == id, orElse: () => acts.first);
+
+  CampaignAct? actForNode(String nodeId) {
+    for (final act in acts) {
+      if (act.nodes.any((n) => n.id == nodeId)) return act;
+    }
+    return null;
+  }
 
   bool isUnlocked(String nodeId, Set<String> completedNodeIds) {
     final node = nodeById(nodeId);
@@ -88,4 +178,56 @@ class CampaignChapter {
 
   bool isCompleted(String nodeId, Set<String> completedNodeIds) =>
       completedNodeIds.contains(nodeId);
+
+  bool isActUnlocked(CampaignAct act, Set<String> completedNodeIds) {
+    if (act.index == 0) return true;
+    final prev = acts[act.index - 1];
+    return completedNodeIds.contains(prev.finale.id);
+  }
+
+  bool isActCompleted(CampaignAct act, Set<String> completedNodeIds) =>
+      completedNodeIds.contains(act.finale.id);
+
+  /// Furthest unlocked act (for auto-resume).
+  CampaignAct currentAct(Set<String> completedNodeIds) {
+    CampaignAct best = acts.first;
+    for (final act in acts) {
+      if (isActUnlocked(act, completedNodeIds)) best = act;
+    }
+    return best;
+  }
+
+  /// Order of the node the player should play next (first unlocked incomplete).
+  /// If the chapter is fully cleared, returns the last node's order.
+  int frontierOrder(Set<String> completedNodeIds) {
+    for (final node in nodes) {
+      if (isUnlocked(node.id, completedNodeIds) &&
+          !isCompleted(node.id, completedNodeIds)) {
+        return node.order;
+      }
+    }
+    if (nodes.isEmpty) return 0;
+    return nodes.last.order;
+  }
+
+  /// Fog of war: completed + current are clear; N+1 is a peek; farther is shrouded.
+  MapFogTier fogTier(CampaignNode node, Set<String> completedNodeIds) {
+    if (isCompleted(node.id, completedNodeIds)) return MapFogTier.clear;
+    final frontier = frontierOrder(completedNodeIds);
+    if (node.order <= frontier) return MapFogTier.clear;
+    if (node.order == frontier + 1) return MapFogTier.peek;
+    return MapFogTier.shrouded;
+  }
+}
+
+/// How visible a pin is under map fog of war.
+enum MapFogTier {
+  /// Completed or current playable node.
+  clear,
+
+  /// Immediate next node (N+1) — visible but not yet playable.
+  peek,
+
+  /// Beyond N+1 — barely visible through fog.
+  shrouded,
 }
