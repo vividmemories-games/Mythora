@@ -19,6 +19,19 @@ abstract final class GameAssets {
 
   static const prepIcons = [prepVanguard, prepAegis, prepSecondWind];
 
+  static const iconMoves = 'assets/images/icons/icon_moves.png';
+  static const iconAp = 'assets/images/icons/icon_ap.png';
+
+  /// Resource HUD reuses board gem art so colors stay consistent.
+  static String resourceIcon(String resourceId) => switch (resourceId) {
+        'attack' => tile(TileColor.red),
+        'mana' => tile(TileColor.blue),
+        'healing' => tile(TileColor.green),
+        'shield' => tile(TileColor.yellow),
+        'ultimate' => tile(TileColor.purple),
+        _ => tile(TileColor.red),
+      };
+
   static String hero(String heroId) => 'assets/heroes/hero_$heroId.png';
 
   static String tile(TileColor color) => switch (color) {

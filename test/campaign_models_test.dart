@@ -48,6 +48,44 @@ void main() {
     ]);
   });
 
+  test('map coordinates parse when valid and normalized', () {
+    final node = CampaignNode.fromJson({
+      'id': 'node_01',
+      'name': 'A',
+      'enemyId': 'goblin',
+      'coinReward': 35,
+      'order': 0,
+      'mapX': 0.46,
+      'mapY': 0.9,
+    });
+    expect(node.mapX, 0.46);
+    expect(node.mapY, 0.9);
+  });
+
+  test('missing or out-of-range map coordinates fall back to null', () {
+    final missing = CampaignNode.fromJson({
+      'id': 'node_01',
+      'name': 'A',
+      'enemyId': 'goblin',
+      'coinReward': 35,
+      'order': 0,
+    });
+    expect(missing.mapX, isNull);
+    expect(missing.mapY, isNull);
+
+    final invalid = CampaignNode.fromJson({
+      'id': 'node_02',
+      'name': 'B',
+      'enemyId': 'wolf',
+      'coinReward': 50,
+      'order': 1,
+      'mapX': 1.4,
+      'mapY': -0.2,
+    });
+    expect(invalid.mapX, isNull);
+    expect(invalid.mapY, isNull);
+  });
+
   test('boss_sighting and warchief mark isBoss', () {
     final boss = CampaignNode.fromJson({
       'id': 'node_05',

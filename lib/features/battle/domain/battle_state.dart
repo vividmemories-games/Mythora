@@ -39,6 +39,7 @@ class BattleState {
     this.clearingCells = const {},
     this.spawningIds = const {},
     this.combatFx = CombatFx.none,
+    this.enemyIntent,
     this.lastEnemySkillName,
     this.log = const [],
   });
@@ -71,6 +72,11 @@ class BattleState {
   final Set<int> spawningIds;
 
   final CombatFx combatFx;
+
+  /// Telegraphed enemy action for the upcoming enemy turn. Rolled at the
+  /// start of each player turn and executed exactly, so the threat badge
+  /// is honest.
+  final EnemySkill? enemyIntent;
   final String? lastEnemySkillName;
   final List<String> log;
 
@@ -146,6 +152,7 @@ class BattleState {
     Set<(int, int)>? clearingCells,
     Set<int>? spawningIds,
     CombatFx? combatFx,
+    EnemySkill? enemyIntent,
     String? lastEnemySkillName,
     bool clearEnemySkill = false,
     List<String>? log,
@@ -170,6 +177,7 @@ class BattleState {
       clearingCells: clearingCells ?? this.clearingCells,
       spawningIds: spawningIds ?? this.spawningIds,
       combatFx: combatFx ?? this.combatFx,
+      enemyIntent: enemyIntent ?? this.enemyIntent,
       lastEnemySkillName: clearEnemySkill
           ? null
           : (lastEnemySkillName ?? this.lastEnemySkillName),
@@ -354,6 +362,15 @@ class BattleController {
     return skills.last;
   }
 
+  /// Rolls the telegraphed action for the next enemy turn. Call at battle
+  /// start; [applyEnemySkill] re-rolls automatically for following turns.
+  void rollEnemyIntent() {
+    state = state.copyWith(enemyIntent: pickEnemySkill());
+  }
+
+  /// The action the enemy will actually take — the telegraphed intent.
+  EnemySkill get enemyAction => state.enemyIntent ?? pickEnemySkill();
+
   void applyEnemySkill(EnemySkill skill) {
     var damage = skill.damage;
     var shield = state.shield;
@@ -382,6 +399,7 @@ class BattleController {
           movesLeft: state.movesPerTurn,
           phase: BattlePhase.playerTurn,
           combatFx: CombatFx.heroCast,
+          enemyIntent: pickEnemySkill(),
           lastEnemySkillName: skill.name,
           log: [
             ...logs,
@@ -408,6 +426,7 @@ class BattleController {
       movesLeft: state.movesPerTurn,
       phase: BattlePhase.playerTurn,
       combatFx: CombatFx.heroHit,
+      enemyIntent: pickEnemySkill(),
       lastEnemySkillName: skill.name,
       log: [...logs, 'Your turn — ${state.movesPerTurn} moves'],
     );

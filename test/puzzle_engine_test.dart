@@ -376,7 +376,7 @@ void main() {
       (i) => BoardCell.tile(id: ids.next(), color: TileColor.values[i % 5]),
     );
     final board = PuzzleBoard(width: 6, height: 6, cells: cells);
-    final dest = (2, 2);
+    const dest = (2, 2);
     final withV = PuzzleEngine.mergeBlast(
       board: board,
       dest: dest,
@@ -468,6 +468,83 @@ void main() {
     );
     expect(clear.contains((2, 2)), isTrue);
     expect(clear.length, 8);
+  });
+
+  test('power-up spawns at swap origin when that tile completed the shape', () {
+    final ids = TileIdGen();
+    // Selecting (0,1) and tapping (1,1) pulls the red up into row 0,
+    // completing an H4 through the origin cell (0,1).
+    final board = _board(
+        4,
+        3,
+        [
+          TileColor.red, TileColor.blue, TileColor.red, TileColor.red, //
+          TileColor.green, TileColor.red, TileColor.yellow, TileColor.purple,
+          TileColor.yellow, TileColor.purple, TileColor.green, TileColor.blue,
+        ],
+        ids: ids);
+    expect(MatchShapes.detectAll(board), isEmpty);
+
+    final cascade = PuzzleEngine.trySwap(
+      board,
+      (0, 1),
+      (1, 1),
+      random: Random(0),
+      ids: ids,
+    );
+    expect(cascade, isNotNull);
+    expect(cascade!.totals.rocketsCreated, 1);
+    final after = cascade.steps.first.boardAfterClear;
+    expect(after.at(0, 1).special, TileSpecial.rocketVertical);
+  });
+
+  test('one swap completing two shapes creates both power-ups', () {
+    final ids = TileIdGen();
+    // Swapping (2,1)<->(2,2) completes a V4 of blue in col 1 (through the
+    // origin) and a V4 of red in col 2 (through the destination).
+    final board = _board(
+        4,
+        4,
+        [
+          TileColor.green, TileColor.blue, TileColor.red, TileColor.yellow, //
+          TileColor.purple, TileColor.blue, TileColor.red, TileColor.green,
+          TileColor.yellow, TileColor.red, TileColor.blue, TileColor.purple,
+          TileColor.green, TileColor.blue, TileColor.red, TileColor.yellow,
+        ],
+        ids: ids);
+    expect(MatchShapes.detectAll(board), isEmpty);
+
+    final cascade = PuzzleEngine.trySwap(
+      board,
+      (2, 1),
+      (2, 2),
+      random: Random(0),
+      ids: ids,
+    );
+    expect(cascade, isNotNull);
+    expect(cascade!.totals.rocketsCreated, 2);
+    final after = cascade.steps.first.boardAfterClear;
+    expect(after.at(2, 1).special, TileSpecial.rocketHorizontal);
+    expect(after.at(2, 2).special, TileSpecial.rocketHorizontal);
+  });
+
+  test('L shape and its embedded 4-line collapse to a single seeker', () {
+    final ids = TileIdGen();
+    // Formed L: col 0 rows 0-3 + (3,1). The vertical arm alone would be a
+    // rocket shape; only the higher-ranked seeker must be created.
+    final board = _board(
+        4,
+        4,
+        [
+          TileColor.red, TileColor.blue, TileColor.green, TileColor.yellow, //
+          TileColor.red, TileColor.yellow, TileColor.purple, TileColor.blue,
+          TileColor.red, TileColor.green, TileColor.blue, TileColor.purple,
+          TileColor.red, TileColor.red, TileColor.yellow, TileColor.green,
+        ],
+        ids: ids);
+    final plan = PuzzleEngine.planWave(board, random: Random(0));
+    expect(plan.creations.length, 1);
+    expect(plan.creations.values.single, TileSpecial.seeker);
   });
 
   test('trySwap rejects non-matching adjacent swap', () {

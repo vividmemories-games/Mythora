@@ -61,6 +61,8 @@ class BattleNotifier extends StateNotifier<BattleState> {
           ),
         ) {
     _controller = BattleController(state);
+    _controller.rollEnemyIntent();
+    state = _controller.state;
   }
 
   late BattleController _controller;
@@ -244,8 +246,8 @@ class BattleNotifier extends StateNotifier<BattleState> {
 
     final armedBefore = state.secondWindArmed;
     _controller.state = state;
-    final skill = _controller.pickEnemySkill();
-    _controller.applyEnemySkill(skill);
+    // Execute the telegraphed intent, not a fresh roll.
+    _controller.applyEnemySkill(_controller.enemyAction);
     state = _controller.state;
 
     if (armedBefore && !state.secondWindArmed && state.heroHp > 0) {
@@ -291,6 +293,7 @@ class BattleNotifier extends StateNotifier<BattleState> {
         equippedPrep: _equippedPrep,
       ),
     );
+    _controller.rollEnemyIntent();
     state = _controller.state;
   }
 }

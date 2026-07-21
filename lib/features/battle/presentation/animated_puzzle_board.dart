@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../core/assets/game_assets.dart';
@@ -6,7 +8,8 @@ import '../../puzzle/domain/board_cell.dart';
 import '../../puzzle/domain/tile_color.dart';
 import '../domain/battle_state.dart';
 
-/// Match-3 board with destroy / fall / spawn motion.
+/// Flat match-3 board, bottom-anchored above the skill dock.
+/// No grid chrome — gems float on the background with soft contact shadows.
 class AnimatedPuzzleBoard extends StatelessWidget {
   const AnimatedPuzzleBoard({
     super.key,
@@ -19,65 +22,81 @@ class AnimatedPuzzleBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final board = battle.board;
-    return Container(
-      decoration: BoxDecoration(
-        color: MythoraColors.deepTeal.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MythoraColors.mist),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const gap = 3.0;
-          final cellW =
-              (constraints.maxWidth - gap * (board.width - 1)) / board.width;
-          final cellH =
-              (constraints.maxHeight - gap * (board.height - 1)) / board.height;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Bottom breathing room lifts the board off the skill dock.
+        const bottomGap = 18.0;
+        final boardSize = math.min(
+          constraints.maxWidth,
+          math.max(0.0, constraints.maxHeight - bottomGap),
+        );
 
-          return Stack(
-            clipBehavior: Clip.hardEdge,
-            children: [
-              for (var row = 0; row < board.height; row++)
-                for (var col = 0; col < board.width; col++)
-                  if (board.at(row, col).isEmpty)
-                    Positioned(
-                      left: col * (cellW + gap),
-                      top: row * (cellH + gap),
-                      width: cellW,
-                      height: cellH,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: MythoraColors.ink.withValues(alpha: 0.35),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-              for (var row = 0; row < board.height; row++)
-                for (var col = 0; col < board.width; col++)
-                  if (board.at(row, col).isPlayable &&
-                      board.at(row, col).id != null)
-                    _BoardTile(
-                      key: ValueKey('tile-${board.at(row, col).id}'),
-                      id: board.at(row, col).id!,
-                      row: row,
-                      col: col,
-                      color: board.at(row, col).color,
-                      special: board.at(row, col).special,
-                      cellW: cellW,
-                      cellH: cellH,
-                      gap: gap,
-                      selected: battle.selectedCell == (row, col),
-                      clearing: battle.clearingCells.contains((row, col)),
-                      spawning:
-                          battle.spawningIds.contains(board.at(row, col).id),
-                      interactive: !battle.inputLocked,
-                      onTap: () => onTap(row, col),
-                    ),
-            ],
-          );
-        },
-      ),
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: bottomGap),
+            child: SizedBox(
+              width: boardSize,
+              height: boardSize,
+              child: _BoardSurface(
+                battle: battle,
+                onTap: onTap,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _BoardSurface extends StatelessWidget {
+  const _BoardSurface({
+    required this.battle,
+    required this.onTap,
+  });
+
+  final BattleState battle;
+  final void Function(int row, int col) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final board = battle.board;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const gap = 3.0;
+        final cellW =
+            (constraints.maxWidth - gap * (board.width - 1)) / board.width;
+        final cellH =
+            (constraints.maxHeight - gap * (board.height - 1)) / board.height;
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            for (var row = 0; row < board.height; row++)
+              for (var col = 0; col < board.width; col++)
+                if (board.at(row, col).isPlayable &&
+                    board.at(row, col).id != null)
+                  _BoardTile(
+                    key: ValueKey('tile-${board.at(row, col).id}'),
+                    id: board.at(row, col).id!,
+                    row: row,
+                    col: col,
+                    color: board.at(row, col).color,
+                    special: board.at(row, col).special,
+                    cellW: cellW,
+                    cellH: cellH,
+                    gap: gap,
+                    selected: battle.selectedCell == (row, col),
+                    clearing: battle.clearingCells.contains((row, col)),
+                    spawning:
+                        battle.spawningIds.contains(board.at(row, col).id),
+                    interactive: !battle.inputLocked,
+                    onTap: () => onTap(row, col),
+                  ),
+          ],
+        );
+      },
     );
   }
 }
@@ -178,6 +197,24 @@ class _BoardTileState extends State<_BoardTile> {
           fit: StackFit.expand,
           clipBehavior: Clip.none,
           children: [
+            if (!widget.clearing)
+              Positioned(
+                left: widget.cellW * 0.16,
+                right: widget.cellW * 0.16,
+                bottom: -widget.cellH * 0.02,
+                height: widget.cellH * 0.20,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.black.withValues(alpha: 0.40),
+                        Colors.black.withValues(alpha: 0.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             AnimatedScale(
               scale: widget.clearing ? 0.15 : 1,
               duration: const Duration(milliseconds: 200),
@@ -188,29 +225,14 @@ class _BoardTileState extends State<_BoardTile> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 120),
                   decoration: BoxDecoration(
-                    color: MythoraColors.ink.withValues(alpha: 0.25),
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                     border: widget.selected
-                        ? Border.all(color: MythoraColors.parchment, width: 2)
-                        : Border.all(
-                            color: Colors.white.withValues(alpha: 0.08),
-                          ),
-                    boxShadow: widget.clearing
-                        ? [
-                            BoxShadow(
-                              color: _accentColor(widget.color)
-                                  .withValues(alpha: 0.75),
-                              blurRadius: 14,
-                              spreadRadius: 2,
-                            ),
-                          ]
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.25),
-                              blurRadius: 3,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                        ? Border.all(
+                            color: MythoraColors.parchment,
+                            width: 2,
+                          )
+                        : null,
                   ),
                   clipBehavior: Clip.none,
                   child: Stack(
@@ -218,7 +240,7 @@ class _BoardTileState extends State<_BoardTile> {
                     clipBehavior: Clip.none,
                     children: [
                       Transform.scale(
-                        scale: widget.special == TileSpecial.none ? 1.22 : 1.08,
+                        scale: widget.special == TileSpecial.none ? 1.08 : 1.02,
                         child: _TileArt(
                           color: widget.color,
                           special: widget.special,
@@ -251,15 +273,6 @@ class _BoardTileState extends State<_BoardTile> {
       ),
     );
   }
-
-  Color _accentColor(TileColor? color) => switch (color) {
-        TileColor.red => MythoraColors.tileRed,
-        TileColor.blue => MythoraColors.tileBlue,
-        TileColor.green => MythoraColors.tileGreen,
-        TileColor.yellow => MythoraColors.tileYellow,
-        TileColor.purple => MythoraColors.tilePurple,
-        null => MythoraColors.amber,
-      };
 }
 
 /// Puzzle gem or power-up art; falls back to tint if asset missing.

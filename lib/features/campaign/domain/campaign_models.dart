@@ -6,6 +6,8 @@ class CampaignNode {
     required this.coinReward,
     required this.order,
     this.kind = 'normal',
+    this.mapX,
+    this.mapY,
   });
 
   final String id;
@@ -17,10 +19,22 @@ class CampaignNode {
   /// `normal` | `boss_sighting` (schema expands in M4+).
   final String kind;
 
+  /// Pin position on the chapter map, normalized 0–1 (x from left,
+  /// y from top of the map art). Null = no authored position; the map
+  /// screen falls back to evenly spaced slots.
+  final double? mapX;
+  final double? mapY;
+
   bool get isBoss =>
       kind == 'boss_sighting' || kind == 'boss' || enemyId == 'warchief';
 
   factory CampaignNode.fromJson(Map<String, dynamic> json) {
+    double? coord(Object? v) {
+      if (v is! num) return null;
+      final d = v.toDouble();
+      return (d < 0 || d > 1) ? null : d;
+    }
+
     return CampaignNode(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -28,6 +42,8 @@ class CampaignNode {
       coinReward: json['coinReward'] as int,
       order: json['order'] as int,
       kind: json['kind'] as String? ?? 'normal',
+      mapX: coord(json['mapX']),
+      mapY: coord(json['mapY']),
     );
   }
 }

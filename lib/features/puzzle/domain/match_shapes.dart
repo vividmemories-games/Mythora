@@ -37,31 +37,53 @@ abstract final class MatchShapes {
     return cells;
   }
 
-  static ({(int, int) at, TileSpecial special})? pickCreation({
+  /// Chooses power-up creations for one wave.
+  ///
+  /// Every disjoint creating shape spawns its own power-up; overlapping
+  /// creating shapes (e.g. an L and the 4-line embedded in its arm)
+  /// collapse to the highest-ranked one.
+  ///
+  /// Placement: the power-up appears on the swapped tile that completed
+  /// the shape — destination first, then origin. Shapes formed without a
+  /// swap (cascade waves) fall back to the shape centroid.
+  static List<({(int, int) at, TileSpecial special})> pickCreations({
     required List<DetectedShape> shapes,
     (int, int)? swapDestination,
+    (int, int)? swapOrigin,
   }) {
-    final creating = shapes.where((s) => s.createsSpecial).toList();
-    if (creating.isEmpty) return null;
-
-    if (swapDestination != null) {
-      final atDest =
-          creating.where((s) => s.cells.contains(swapDestination)).toList();
-      if (atDest.isNotEmpty) {
-        final best = _highest(atDest);
-        return (at: swapDestination, special: best.creates);
+    int swapPreference(DetectedShape s) {
+      if (swapDestination != null && s.cells.contains(swapDestination)) {
+        return 2;
       }
+      if (swapOrigin != null && s.cells.contains(swapOrigin)) return 1;
+      return 0;
     }
 
-    final best = _highest(creating);
-    return (at: _centroid(best.cells), special: best.creates);
-  }
+    final creating = shapes.where((s) => s.createsSpecial).toList()
+      ..sort((a, b) {
+        final rank = b.creates.creationRank.compareTo(a.creates.creationRank);
+        if (rank != 0) return rank;
+        return swapPreference(b).compareTo(swapPreference(a));
+      });
+    if (creating.isEmpty) return const [];
 
-  static DetectedShape _highest(List<DetectedShape> shapes) {
-    return shapes.reduce((a, b) {
-      if (a.creates.creationRank >= b.creates.creationRank) return a;
-      return b;
-    });
+    final picks = <({(int, int) at, TileSpecial special})>[];
+    final claimed = <(int, int)>{};
+    for (final shape in creating) {
+      if (shape.cells.any(claimed.contains)) continue;
+      claimed.addAll(shape.cells);
+
+      final (int, int) at;
+      if (swapDestination != null && shape.cells.contains(swapDestination)) {
+        at = swapDestination;
+      } else if (swapOrigin != null && shape.cells.contains(swapOrigin)) {
+        at = swapOrigin;
+      } else {
+        at = _centroid(shape.cells);
+      }
+      picks.add((at: at, special: shape.creates));
+    }
+    return picks;
   }
 
   static (int, int) _centroid(Set<(int, int)> cells) {

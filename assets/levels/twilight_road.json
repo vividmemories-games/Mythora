@@ -8,28 +8,36 @@
       "name": "Goblin Path",
       "enemyId": "goblin",
       "coinReward": 35,
-      "order": 0
+      "order": 0,
+      "mapX": 0.46,
+      "mapY": 0.9
     },
     {
       "id": "node_02",
       "name": "Wolf Den",
       "enemyId": "wolf",
       "coinReward": 50,
-      "order": 1
+      "order": 1,
+      "mapX": 0.58,
+      "mapY": 0.72
     },
     {
       "id": "node_03",
       "name": "Shaman Hollow",
       "enemyId": "shaman",
       "coinReward": 70,
-      "order": 2
+      "order": 2,
+      "mapX": 0.44,
+      "mapY": 0.55
     },
     {
       "id": "node_04",
       "name": "Brute Gate",
       "enemyId": "brute",
       "coinReward": 90,
-      "order": 3
+      "order": 3,
+      "mapX": 0.57,
+      "mapY": 0.38
     },
     {
       "id": "node_05",
@@ -37,7 +45,9 @@
       "enemyId": "warchief",
       "coinReward": 120,
       "order": 4,
-      "kind": "boss_sighting"
+      "kind": "boss_sighting",
+      "mapX": 0.5,
+      "mapY": 0.17
     }
   ]
 }

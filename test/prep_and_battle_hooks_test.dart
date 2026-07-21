@@ -51,7 +51,7 @@ void main() {
           secondWindArmed: true,
         ).copyWith(heroHp: 1, shield: 0),
       );
-      final lethal = const EnemySkill(
+      const lethal = EnemySkill(
         id: 'heavy',
         name: 'Heavy',
         damage: 99,

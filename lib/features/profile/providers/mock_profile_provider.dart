@@ -69,7 +69,13 @@ class PlayerProfile {
     );
   }
 
+  /// Bump when the persisted shape changes; readers stay tolerant of older
+  /// payloads. Mirrors the planned Firestore `users` doc (see
+  /// docs/04_Technical/Firestore_Schema.md).
+  static const schemaVersion = 3;
+
   Map<String, dynamic> toJson() => {
+        'schemaVersion': schemaVersion,
         'displayName': displayName,
         'coins': coins,
         'gems': gems,

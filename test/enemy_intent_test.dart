@@ -1,0 +1,90 @@
+import 'dart:math';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mythora/features/battle/domain/battle_state.dart';
+import 'package:mythora/features/battle/domain/enemy_def.dart';
+import 'package:mythora/features/heroes/domain/hero_def.dart';
+
+void main() {
+  BattleController makeController({int seed = 7}) {
+    return BattleController(
+      BattleState.initial(
+        hero: HeroCatalog.mage,
+        enemy: EnemyCatalog.goblin,
+      ),
+      random: Random(seed),
+    );
+  }
+
+  group('Enemy intent telegraph', () {
+    test('rollEnemyIntent sets an intent from the enemy skill list', () {
+      final controller = makeController();
+      expect(controller.state.enemyIntent, isNull);
+      controller.rollEnemyIntent();
+      final intent = controller.state.enemyIntent;
+      expect(intent, isNotNull);
+      expect(EnemyCatalog.goblin.skills, contains(intent));
+    });
+
+    test('enemyAction returns the telegraphed intent', () {
+      final controller = makeController();
+      controller.rollEnemyIntent();
+      final intent = controller.state.enemyIntent;
+      expect(controller.enemyAction, same(intent));
+    });
+
+    test('applyEnemySkill executes exactly the telegraphed damage', () {
+      final controller = makeController();
+      controller.rollEnemyIntent();
+      final intent = controller.state.enemyIntent!;
+      final hpBefore = controller.state.heroHp;
+
+      controller.applyEnemySkill(controller.enemyAction);
+
+      expect(controller.state.heroHp, hpBefore - intent.damage);
+      expect(controller.state.lastEnemySkillName, intent.name);
+    });
+
+    test('applyEnemySkill re-rolls intent for the next player turn', () {
+      final controller = makeController();
+      controller.rollEnemyIntent();
+
+      controller.applyEnemySkill(controller.enemyAction);
+
+      expect(controller.state.phase, BattlePhase.playerTurn);
+      expect(controller.state.enemyIntent, isNotNull);
+      expect(
+          EnemyCatalog.goblin.skills, contains(controller.state.enemyIntent));
+    });
+
+    test('second wind revive also re-rolls intent', () {
+      final controller = BattleController(
+        BattleState.initial(
+          hero: HeroCatalog.mage,
+          enemy: EnemyCatalog.goblin,
+          secondWindArmed: true,
+        ).copyWith(heroHp: 1, shield: 0),
+        random: Random(3),
+      );
+      controller.rollEnemyIntent();
+
+      const lethal = EnemySkill(
+        id: 'heavy',
+        name: 'Heavy',
+        damage: 99,
+        weight: 1,
+      );
+      controller.applyEnemySkill(lethal);
+
+      expect(controller.state.phase, BattlePhase.playerTurn);
+      expect(controller.state.secondWindArmed, isFalse);
+      expect(controller.state.enemyIntent, isNotNull);
+    });
+
+    test('weighted roll is deterministic with a seeded random', () {
+      final a = makeController(seed: 42)..rollEnemyIntent();
+      final b = makeController(seed: 42)..rollEnemyIntent();
+      expect(a.state.enemyIntent!.id, b.state.enemyIntent!.id);
+    });
+  });
+}

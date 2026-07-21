@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'board_cell.dart';
+import 'match_balance.dart';
 import 'match_shapes.dart';
 import 'puzzle_board.dart';
 import 'tile_color.dart';
@@ -436,6 +437,7 @@ abstract final class PuzzleEngine {
   static WavePlan planWave(
     PuzzleBoard board, {
     (int, int)? swapDestination,
+    (int, int)? swapOrigin,
     required Random random,
   }) {
     final shapes = MatchShapes.detectAll(board);
@@ -449,11 +451,13 @@ abstract final class PuzzleEngine {
     var clear = expandWithSpecials(board, seed, random: random);
 
     final creations = <(int, int), TileSpecial>{};
-    final pick = MatchShapes.pickCreation(
+    final picks = MatchShapes.pickCreations(
       shapes: shapes,
       swapDestination: swapDestination,
+      swapOrigin: swapOrigin,
     );
-    if (pick != null && seed.contains(pick.at)) {
+    for (final pick in picks) {
+      if (!seed.contains(pick.at)) continue;
       creations[pick.at] = pick.special;
       clear.remove(pick.at);
     }
@@ -480,6 +484,7 @@ abstract final class PuzzleEngine {
     int fireballsCreated = 0,
     int seekersCreated = 0,
     String? mergeLabel,
+    MatchBalanceConfig balance = MatchBalanceConfig.defaults,
   }) {
     if (matched.isEmpty && mergeLabel == null) return MatchResult.empty;
 
@@ -488,19 +493,22 @@ abstract final class PuzzleEngine {
       final color = board.at(row, col).color;
       if (color == null) continue;
       final key = color.resourceId;
-      gains[key] = (gains[key] ?? 0) + 1;
+      gains[key] = (gains[key] ?? 0) + balance.resourcePerTile;
     }
 
-    var ap = matched.isEmpty ? 0 : (matched.length ~/ 3).clamp(1, 99);
-    ap += rocketsCreated;
-    ap += bombsCreated * 2;
-    ap += fireballsCreated * 3;
-    ap += seekersCreated * 2;
+    var ap = matched.isEmpty
+        ? 0
+        : (matched.length ~/ balance.tilesPerAp)
+            .clamp(balance.minApPerMatch, balance.maxApPerWave);
+    ap += rocketsCreated * balance.apPerRocket;
+    ap += bombsCreated * balance.apPerBomb;
+    ap += fireballsCreated * balance.apPerFireball;
+    ap += seekersCreated * balance.apPerSeeker;
 
     return MatchResult(
       matchedCells: matched,
       resourceGains: gains,
-      apGained: ap.clamp(0, 99),
+      apGained: ap.clamp(0, balance.maxApPerWave),
       rocketsCreated: rocketsCreated,
       bombsCreated: bombsCreated,
       fireballsCreated: fireballsCreated,
@@ -800,6 +808,7 @@ abstract final class PuzzleEngine {
     final plan = planWave(
       swapped,
       swapDestination: b,
+      swapOrigin: a,
       random: random,
     );
     if (plan.isEmpty) return null;

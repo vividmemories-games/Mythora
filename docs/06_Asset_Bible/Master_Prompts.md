@@ -24,7 +24,7 @@ Generate in priority order: **P0 → P1 → P2 → P3 → P4**.
 | Priority | Meaning                   | Done / Total |
 | -------- | ------------------------- | ------------ |
 | **P0**   | Ship now / M1 board juice | 12 / 12      |
-| **P1**   | M2–M3 prep + home         | 6 / 6        |
+| **P1**   | M2–M3 prep + home + HUD   | 8 / 8        |
 | **P2**   | M4–M6 Ch1 vertical slice  | 9 / 9        |
 | **P3**   | First hero unlock polish  | 0 / 1        |
 | **P4**   | Post-launch Ch2–10        | 0 / 63       |
@@ -43,6 +43,7 @@ Generate in priority order: **P0 → P1 → P2 → P3 → P4**.
 | Tiles               | `assets/images/tiles/`              |
 | Board power-ups     | `assets/images/powerups/`           |
 | Meta prep icons     | `assets/images/prep/`               |
+| HUD icons           | `assets/images/icons/`              |
 | Battle stage BGs    | `assets/images/backgrounds/battle/` |
 | Home BG             | `assets/images/backgrounds/`        |
 | Campaign map strips | `assets/images/maps/`               |
@@ -416,6 +417,44 @@ no UI, no health bar
 Full-body chibi enemy, goblin scout, large head short body, green-grey skin, large pointed ears,
 dual small daggers, leather scraps, wary combat pose, facing slightly left, feet near bottom,
 solid flat background deep teal #123A44, thick clean outlines, soft cel shading, glossy toy finish, no gore, no UI
+```
+
+---
+
+
+
+## P1 — Battle HUD icons
+
+
+
+### `icon_moves.png` — **P1**
+
+- [x] Created
+
+- **Path:** `assets/images/icons/icon_moves.png`
+- **Size:** 256 × 256 · transparent
+- **Notes:** Moves chip on battle HUD
+- **Negative:** universal character/icon
+
+```text
+Single mobile game HUD icon, Moves, stylized leather boot footprint soft gold accents,
+thick clean outline, soft cel shading, glossy toy finish, centered, transparent background, no text
+```
+
+
+
+### `icon_ap.png` — **P1**
+
+- [x] Created
+
+- **Path:** `assets/images/icons/icon_ap.png`
+- **Size:** 256 × 256 · transparent
+- **Notes:** AP chip on battle HUD; resources reuse tile_*.png
+- **Negative:** universal character/icon
+
+```text
+Single mobile game HUD icon, Action Points, glowing amber lightning crystal orb,
+thick clean outline, soft cel shading, glossy toy finish, centered, transparent background, no text
 ```
 
 ---
