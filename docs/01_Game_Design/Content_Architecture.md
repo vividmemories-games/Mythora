@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | **Status** | Active |
-| **Last Updated** | 2026-07-20 |
+| **Last Updated** | 2026-07-22 |
 | **Authority** | Extends [Vision](../00_Project/Vision.md) · [GAMEPLAY](../GAMEPLAY.md) · [Decisions](../00_Project/Decisions.md) |
 | **Art prompts** | [Master Prompts](../06_Asset_Bible/Master_Prompts.md) — one Leonardo prompt per artwork ID below |
 
@@ -26,7 +26,9 @@ This is the **master content plan** for Mythora’s first 200-level campaign, we
 |------|-------|
 | Total levels | **200** (stub all in JSON for v1) |
 | Chapters | **10** × **20** levels |
-| Map | Vertical scrolling path (Candy Crush style) |
+| Acts | **4** acts × **5** levels per chapter |
+| Map | Vertical Candy Crush–style path; **one portrait map per act** (not one mega-strip per chapter) |
+| Map art count | **40** (`map_ch_{slug}_a1`…`_a4` × 10 chapters) |
 | Boss sightings | Chapter levels **5 / 10 / 15 / 20** |
 | Boss outcome | Flees at 5, 10, 15 → **dies** at 20 |
 | Regular levels | Trash enemies + chapter board rule; grant prep items / coins |
@@ -108,11 +110,15 @@ Rewards (coins, weekly tokens, chests) → Balancing Bible / Economy later. Live
 | Element | Spec |
 |---------|------|
 | Background | Dusk gradient + soft silhouette (`bg_home_dusk.png`) |
-| Top bar | Brand · coins · gems · **lives** |
+| Top bar | Brand · coins · gems · **lives** · profile · settings |
 | Hero spotlight | Selected hero sprite; tap → Heroes |
-| Primary CTA | **Enter Campaign** → vertical map |
-| Secondary | Weekly status · Heroes |
-| Not on home | Full level path (Campaign screen only) |
+| Primary CTA | **Enter Campaign** → vertical map (+ chapter/level teaser) |
+| Secondary | Daily dungeon · Weekly · Challenge (async friend duel) |
+| Retention | Daily missions badge/entry (separate from dungeon) |
+| Meta | Heroes · Shop · Prep inventory |
+| Not on home | Full level path (Campaign screen only); full shop catalog |
+
+Own screens (not embedded on Home): **Settings**, **Profile**, **Shop** (tabbed). See [Decisions](../00_Project/Decisions.md) 2026-07-22.
 
 ---
 
@@ -129,7 +135,7 @@ Prompts: [Master Prompts](../06_Asset_Bible/Master_Prompts.md).
 | Trash enemies | **8** | `assets/enemies/` |
 | Chapter bosses × forms | **40** | `assets/enemies/bosses/` |
 | Battle stage backgrounds | **10** | `assets/images/backgrounds/battle/` |
-| Campaign map strips | **10** | `assets/images/maps/` |
+| Campaign act maps | **40** | `assets/images/maps/` (4 acts × 10 chapters) |
 | Home background | **1** | `assets/images/backgrounds/` |
 | Board power-ups | **5** | `assets/images/powerups/` |
 | Meta prep icons | **3** | `assets/images/prep/` |
@@ -185,7 +191,7 @@ f1 = sighting (small/weak), f2 = elite, f3 = oversized intimidation, f4 = final 
 | File | Path |
 |------|------|
 | Battle BGs | `assets/images/backgrounds/battle/bg_battle_*.png` |
-| Map strips | `assets/images/maps/map_ch_*.png` |
+| Act maps | `assets/images/maps/map_ch_*_a{1-4}.png` |
 | Home | `assets/images/backgrounds/bg_home_dusk.png` |
 
 ### 6.6 Board power-ups
@@ -226,7 +232,7 @@ Do **not** generate all 86 assets before B–E feel good. Priority art order:
 
 1. Board power-ups (5)  
 2. Meta prep icons (3)  
-3. Ch1 boss forms f1–f4 + battle BG + map strip  
+3. Ch1 boss forms f1–f4 + battle BG + act maps a1–a4  
 4. Remaining heroes as unlocks approach  
 5. Chapters 2–10 in order  
 
