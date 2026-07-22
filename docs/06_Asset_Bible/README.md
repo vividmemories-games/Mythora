@@ -36,7 +36,7 @@ Philosophy adapted from Labyrinth Legends AB0/AB5 — **without** maze tilesets 
 | Tiles | Five resource colors | AB1 + shipped |
 | Heroes / trash / bosses | Full campaign roster | [Master Prompts](Master_Prompts.md) · [Content Architecture](../01_Game_Design/Content_Architecture.md) |
 | Power-ups + meta prep | Rocket, bomb, tonic… | Master Prompts §7–§8 |
-| BGs / maps | Chapter battle + vertical path | Master Prompts §4–§6 |
+| BGs / maps | Chapter battle BGs + **4 act maps per chapter** (40 total) | Master Prompts · Content Architecture |
 | VFX | Clear, create, hit, flee | Master Prompts §9 |
 
 ## Out of scope now

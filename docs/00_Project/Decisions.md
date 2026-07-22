@@ -200,3 +200,68 @@ movesThisTurn = hero.movesPerTurn
 **Impact:** [Content Architecture](../01_Game_Design/Content_Architecture.md), [GAMEPLAY](../GAMEPLAY.md), future level JSON (`maskId`, `moverId`, `enrageAfterTurns`, `minMoves`).
 
 **Status:** Accepted
+
+---
+
+## 2026-07-22 — Full-game build order (post–vertical slice)
+
+**Decision:** Treat Mythora as a **full game** built around the 200-level campaign spine — not an MVP-only scope. Agreed build order:
+
+| # | Phase | Scope |
+|--:|-------|--------|
+| **1** | Campaign spine | 200-level **structure** + chapter maps + board **types/templates** (masks, obstacles, movers). Stub/fill via reusable templates — not 200 uniquely hand-tuned fights before systems exist. |
+| **2** | Balancing Bible | Formulas, curves, resource/AP/damage, enemy kits — tune on representative chapters, then apply across templates. |
+| **3** | Shell polish | Splash + Home hub (full layout) + **Settings** and **Profile** as own screens. |
+| **4** | Full stack | Daily missions → Shop → Weekly → Daily dungeon → Firebase/economy → Friend Challenge → cosmetics/events |
+
+**Reason:** Campaign is the content spine; balance needs representative boards before retention/social; shell and economy stack after the loop feels fair.
+
+**Impact:** [PHASES](../PHASES.md) (directional), Home/Shop/Profile/Settings routes, retention features below.
+
+**Status:** Accepted
+
+---
+
+## 2026-07-22 — Full-game surface: modes, hub, Challenge rule A
+
+**Decision:** Product surface around the campaign:
+
+### Modes
+| Mode | Role |
+|------|------|
+| **Campaign** | Primary progress (200 levels) |
+| **Daily missions** | Checklist retention (e.g. clear N boards, match N greens/blues) — separate from Daily dungeon |
+| **Daily dungeon** | One rotating special fight |
+| **Weekly** | Mon–Fri objectives → weekend extreme boss; fail spends life |
+| **Challenge** | Async **friend duel** using normal Mythora loop (**rule A**): moves → match → resources/AP → skills; puzzle does **not** deal direct damage. Same balance as PvE at first. |
+| **Events** | Later; limited modifiers/cosmetics — not a second campaign |
+
+Defer early: realtime ranked PvP, guilds, season-pass sprawl.
+
+### Shell / navigation
+- **Home** remains a **hub** (not the map); primary CTA **Enter Campaign**; mode tiles for Daily / Weekly / Challenge; secondary icons for Heroes / Shop / Missions.
+- **No bottom tab bar** until Shop + Profile are daily habits; optional later cap at **3 tabs** (Play · Shop · Profile).
+- **Splash** → Home (Auth when Firebase).
+- **Settings** — own screen (not sheet-only).
+- **Profile** — own screen (progress, friend code, account).
+- **Shop** — own screen with tabs (Featured / Cosmetics / Boosts / Heroes / Gems as needed). Cosmetics + capped convenience; no pay-to-win Challenge power.
+
+**Reason:** Retention and social orbit the campaign without a second combat language or live-ops dashboard Home.
+
+**Impact:** [Content Architecture](../01_Game_Design/Content_Architecture.md) §5 Home hub; future `missions/`, `shop/`, `challenge/` features; Settings/Profile routes.
+
+**Status:** Accepted
+
+---
+
+## 2026-07-22 — Four act maps per chapter (art inventory)
+
+**Decision:** Each campaign chapter uses **4 act maps** (one portrait map per act, **5 nodes** each) — matching the Ch1 / campaign UI pattern. Across **10 chapters** that is **40** map artworks (`map_ch_{slug}_a1.png` … `_a4.png`), not one mega-strip per chapter.
+
+Legacy single-strip filenames (`map_ch_*.png` without `_aN`) remain **deprecated**.
+
+**Reason:** Act-sized 1024×1536 maps are generator-friendly, match `CampaignAct.mapAsset`, and let each act densify visually without stitching 5800px strips.
+
+**Impact:** [Content Architecture](../01_Game_Design/Content_Architecture.md) art counts; [Master Prompts](../06_Asset_Bible/Master_Prompts.md) P2 (Ch1 done) + P4 (Ch2–10 × 4).
+
+**Status:** Accepted

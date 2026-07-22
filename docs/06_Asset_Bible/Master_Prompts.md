@@ -4,10 +4,10 @@
 | Field            | Value                                                                                                      |
 | ---------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Status**       | Active — checklist tracker                                                                                 |
-| **Last Updated** | 2026-07-20                                                                                                 |
+| **Last Updated** | 2026-07-22                                                                                                 |
 | **Plan**         | [Content Architecture](../01_Game_Design/Content_Architecture.md)                                          |
 | **Style**        | [AB1 Production Standards](AB1_Production_Standards.md) · [AB1 Leonardo Pack](AB1_Leonardo_Prompt_Pack.md) |
-| **Decisions**    | [2026-07-20 campaign lock](../00_Project/Decisions.md)                                                     |
+| **Decisions**    | [2026-07-20 campaign](../00_Project/Decisions.md) · [2026-07-22 act maps](../00_Project/Decisions.md)     |
 
 
 One **prompt per artwork**. Mark **Created** when the file exists at **Path**. Prompt Enhance **OFF**. Style Reference = `style_board_hero_mage.png` or `hero_mage.png` @ **Mid** (characters/icons).
@@ -27,7 +27,7 @@ Generate in priority order: **P0 → P1 → P2 → P3 → P4**.
 | **P1**   | M2–M3 prep + home + HUD   | 8 / 8        |
 | **P2**   | M4–M6 Ch1 vertical slice  | 9 / 9        |
 | **P3**   | First hero unlock polish  | 0 / 1        |
-| **P4**   | Post-launch Ch2–10        | 0 / 63       |
+| **P4**   | Post-launch Ch2–10        | 0 / 90       |
 
 
 
@@ -46,7 +46,7 @@ Generate in priority order: **P0 → P1 → P2 → P3 → P4**.
 | HUD icons           | `assets/images/icons/`              |
 | Battle stage BGs    | `assets/images/backgrounds/battle/` |
 | Home BG             | `assets/images/backgrounds/`        |
-| Campaign map strips | `assets/images/maps/`               |
+| Campaign act maps   | `assets/images/maps/`               |
 | VFX                 | `assets/images/vfx/`                |
 | Style board         | `assets/images/style_board/`        |
 
@@ -63,7 +63,7 @@ Generate in priority order: **P0 → P1 → P2 → P3 → P4**.
 | Characters / bosses     | 1024 × 1024 | Full-body chibi; solid `#123A44` or Remove BG |
 | Icons (power-up / prep) | 768 × 768   | Transparent                                   |
 | Battle backgrounds      | 1024 × 1536 | Soft empty lower third                        |
-| Map strips              | 1024 × 1536 | One portrait map **per act** (4 acts × chapter) |
+| Map act portraits       | 1024 × 1536 | **4 per chapter** (a1–a4); empty path for five pins |
 | Home bg                 | 1024 × 1536 | No UI chrome                                  |
 | VFX                     | 768 × 768   | Transparent                                   |
 
@@ -1650,150 +1650,165 @@ empty clear lower third for characters, painterly 2D casual fantasy, Mythspire G
 
 
 
-## P4 — Map strips Ch2–10
+## P4 — Act maps Ch2–10 (4 per chapter)
 
 
 
-### `map_ch_mistfen_marshes.png` — **P4**
+Each chapter mirrors Ch1: **`map_ch_{slug}_a1.png` … `_a4.png`** — one 1024×1536 portrait per act (5 nodes). Act N is darker/denser than Act N−1. Legacy single-strip files without `_aN` are **deprecated** (do not generate).
+
+**Inventory:** 9 chapters × 4 acts = **36** map arts (Ch1’s 4 already under P2 → **40** campaign maps total).
+
+
+
+### `map_ch_mistfen_marshes_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_mistfen_marshes.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Mistfen Marshes
+- **Path:** `assets/images/maps/map_ch_mistfen_marshes_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Mistfen Marshes; 4 acts × 5 nodes; denser fog per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding boardwalk path through foggy teal swamp upward,
-soft painterly 2D, empty path zones for markers, Mistfen Marshes, no text, no UI, no characters
+Tall portrait mobile campaign map, winding boardwalk path through foggy teal swamp,
+empty path for five level markers, Act N darker denser fog than previous,
+painterly fantasy, Mistfen Marshes, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_howling_ridge.png` — **P4**
+### `map_ch_howling_ridge_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_howling_ridge.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Howling Ridge
+- **Path:** `assets/images/maps/map_ch_howling_ridge_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Howling Ridge; wind/cliff densifies per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding cliff switchback path upward, windy dusk ridges,
-soft painterly 2D, empty path zones for markers, Howling Ridge, no text, no UI, no characters
+Tall portrait mobile campaign map, winding cliff switchback path, windy dusk ridges,
+empty path for five level markers, Act N darker windier than previous,
+painterly fantasy, Howling Ridge, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_ashen_quarries.png` — **P4**
+### `map_ch_ashen_quarries_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_ashen_quarries.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Ashen Quarries
+- **Path:** `assets/images/maps/map_ch_ashen_quarries_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Ashen Quarries; ember/ash densifies per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding quarry switchbacks upward, ash and ember accents,
-soft painterly 2D, empty path zones for markers, Ashen Quarries, no text, no UI, no characters
+Tall portrait mobile campaign map, winding quarry switchbacks, ash and ember accents,
+empty path for five level markers, Act N denser embers than previous,
+painterly fantasy, Ashen Quarries, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_candlecrypt.png` — **P4**
+### `map_ch_candlecrypt_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_candlecrypt.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Candlecrypt
+- **Path:** `assets/images/maps/map_ch_candlecrypt_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Candlecrypt; candle/purple glow densifies per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding candlelit crypt corridor path upward, soft purple glows,
-soft painterly 2D, empty path zones for markers, Candlecrypt, no text, no UI, no characters
+Tall portrait mobile campaign map, winding candlelit crypt corridor path,
+empty path for five level markers, Act N darker more candles than previous,
+painterly fantasy, Candlecrypt, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_mirror_lake.png` — **P4**
+### `map_ch_mirror_lake_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_mirror_lake.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Mirror Lake
+- **Path:** `assets/images/maps/map_ch_mirror_lake_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Mirror Lake; reflection/ruin densifies per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding lakeside ruin path upward, reflective teal water,
-soft painterly 2D, empty path zones for markers, Mirror Lake, no text, no UI, no characters
+Tall portrait mobile campaign map, winding lakeside ruin path, reflective teal water,
+empty path for five level markers, Act N denser ruins than previous,
+painterly fantasy, Mirror Lake, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_thornmarket.png` — **P4**
+### `map_ch_thornmarket_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_thornmarket.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Thornmarket
+- **Path:** `assets/images/maps/map_ch_thornmarket_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Thornmarket; lantern bazaar densifies per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding night market alley path upward, amber lantern bokeh,
-soft painterly 2D, empty path zones for markers, Thornmarket, no text, no UI, no characters
+Tall portrait mobile campaign map, winding night market alley path, amber lantern bokeh,
+empty path for five level markers, Act N denser stalls than previous,
+painterly fantasy, Thornmarket, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_skybridge_siege.png` — **P4**
+### `map_ch_skybridge_siege_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_skybridge_siege.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Skybridge Siege
+- **Path:** `assets/images/maps/map_ch_skybridge_siege_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Skybridge Siege; broken spans densify per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding broken bridge path upward over abyss,
-soft painterly 2D, empty path zones for markers, Skybridge Siege, no text, no UI, no characters
+Tall portrait mobile campaign map, winding broken bridge path over abyss,
+empty path for five level markers, Act N more fractured spans than previous,
+painterly fantasy, Skybridge Siege, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_eclipse_forge.png` — **P4**
+### `map_ch_eclipse_forge_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_eclipse_forge.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Eclipse Forge
+- **Path:** `assets/images/maps/map_ch_eclipse_forge_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Eclipse Forge; ember veins densify per act
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding forge cavern path upward, ember veins in rock,
-soft painterly 2D, empty path zones for markers, Eclipse Forge, no text, no UI, no characters
+Tall portrait mobile campaign map, winding forge cavern path, ember veins in rock,
+empty path for five level markers, Act N hotter denser forge glow than previous,
+painterly fantasy, Eclipse Forge, no text, no UI, no characters
 ```
 
 
 
-### `map_ch_mythspire_gate.png` — **P4**
+### `map_ch_mythspire_gate_a1.png` … `_a4.png` — **P4**
 
 - [ ] Created
 
-- **Path:** `assets/images/maps/map_ch_mythspire_gate.png`
-- **Size:** ~1024 × 5800 tall (stitch 4× portrait panels)
-- **Notes:** Mythspire Gate
+- **Path:** `assets/images/maps/map_ch_mythspire_gate_a1.png` (…`_a4.png`)
+- **Size:** 1024 × 1536 each
+- **Notes:** Mythspire Gate; approach densifies toward the gate
 - **Negative:** environment
 
 ```text
-Tall vertical mobile game campaign map background, winding fortress approach path upward to giant dusk gate,
-soft painterly 2D, empty path zones for markers, Mythspire Gate, no text, no UI, no characters
+Tall portrait mobile campaign map, winding fortress approach path to giant dusk gate,
+empty path for five level markers, Act N closer more imposing gate than previous,
+painterly fantasy, Mythspire Gate, no text, no UI, no characters
 ```
 
 ---
